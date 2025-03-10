@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@clerk/nextjs": "^6.12.4",
     "@sanity/client": "^6.28.3",
     "next": "15.2.1",
     "next-sanity": "^9.9.0",

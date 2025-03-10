@@ -1,4 +1,12 @@
 import type { Metadata } from "next";
+import {
+  ClerkProvider,
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from '@clerk/nextjs'
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
@@ -25,6 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    <ClerkProvider>
       <html lang="en">
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
@@ -32,10 +41,20 @@ export default function RootLayout({
           <Link href="/" className="text-3xl font-bold pl-10 pb+5"> {/* Increased font size & added left padding */}
             MRI simplified
           </Link>
+            <div className="flex gap-4">
+              <SignedOut>
+                <SignInButton />
+                <SignUpButton />
+              </SignedOut>
+              <SignedIn>
+                <UserButton />
+              </SignedIn>
+            </div>
           </header>
           <main className="min-h-screen">{children}</main>
           <Footer /> {/* Footer is now shared across all pages */}
         </body>
       </html>
+    </ClerkProvider>
   );
 }
