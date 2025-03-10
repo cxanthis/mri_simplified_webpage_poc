@@ -1,0 +1,49 @@
+/* app/section/[content_id]/page.module.css */
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: 'Inter', sans-serif; /* Make sure to import the font in your project */
+    background-color: #fff; /* Use a single background color */
+    color: #333;
+  }
+  
+  .title {
+    text-align: center;
+    font-size: 3rem;
+    margin-bottom: 2rem;
+  }
+  
+  .tiles {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+  
+  .tile {
+    padding: 2rem;
+    border: 1px solid #eaeaea; /* subtle border to separate each tile */
+    border-radius: 8px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background-color: transparent;
+  }
+  
+  .tile:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .tile h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  /* New rule for <p> elements within .tile */
+  .tile p {
+    font-size: 1.125rem; /* Slightly larger font size for better readability */
+    line-height: 1.8;
+    margin-bottom: 1.5rem; /* Space between paragraphs */
+  }
+  
