@@ -1,0 +1,68 @@
+import Link from 'next/link';
+import Image from 'next/image';
+import {
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from '@clerk/nextjs'
+
+export default function Navbar() {
+  return (
+    <nav className="border-b border-gray-200">
+      <div className="container mx-auto px-4 md:px-6">
+        <div className="flex justify-between items-center h-20">
+          <div className="flex items-center">
+            <button className="md:hidden p-2 mr-2">
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+            <Link href="/" className="text-3xl font-bold">
+              MRI simplified
+            </Link>
+          </div>
+          
+          <div className="hidden md:flex space-x-8">
+            <Link href="/learn-mri" className="text-gray-900 hover:text-blue-600 font-medium">
+              Learn MRI
+            </Link>
+            <Link href="/news" className="text-gray-900 hover:text-blue-600 font-medium">
+              News
+            </Link>
+            <Link href="/newsletters" className="text-gray-900 hover:text-blue-600 font-medium">
+              Newsletters
+            </Link>
+            <Link href="/podcasts" className="text-gray-900 hover:text-blue-600 font-medium">
+              Podcasts
+            </Link>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <button className="p-2 mr-2">
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </button>
+            <SignedOut>
+              <SignInButton mode="modal">
+                <button className="bg-blue-600 text-white px-4 py-2 rounded-md font-medium hidden md:block">
+                  Sign In
+                </button>
+              </SignInButton>
+              <SignUpButton mode="modal">
+                <button className="bg-navy text-white px-4 py-2 rounded-md font-medium hidden md:block">
+                  Sign Up
+                </button>
+              </SignUpButton>
+            </SignedOut>
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
+}
