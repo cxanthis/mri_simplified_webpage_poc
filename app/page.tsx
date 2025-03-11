@@ -1,6 +1,4 @@
 import ThreeColumnSection from '../components/threePartBanner';
-import Image from 'next/image';
-import Link from 'next/link';
 
 interface Part {
   title: string;
@@ -10,27 +8,6 @@ interface Part {
   isPro?: boolean;
   description?: string;
 }
-
-const bookParts: Part[] = [
-  {
-    title: 'MRI Fundamentals',
-    date: 'March 10, 2025',
-    description: 'Learn the basics on MRI',
-    imageUrl: '/mri_fundamentals.jpg',
-  },
-  {
-    title: 'MRI Procedures',
-    date: 'March 3, 2025',
-    description: 'Learn how to use MRI with patients',
-    imageUrl: '/brain_image.jpg',
-  },
-  {
-    title: 'MRI Safety',
-    date: 'March 3, 2025',
-    description: 'Learn everything about MRI safety',
-    imageUrl: '/brain_image.jpg',
-  },
-];
 
 export default function Home() {
   return (
