@@ -2,6 +2,7 @@
 import { notFound } from 'next/navigation';
 import client from '../../../sanityClient';
 import styles from './page.module.css';
+import { SignedIn, SignedOut } from '@clerk/nextjs';
 
 interface Item {
   title: string;
@@ -46,7 +47,12 @@ export default async function ItemPage({ params }: { params: Promise<{ content_i
         </div>
           <div className={styles.tile}>
             <h2>Clinical Relevance</h2>
-            <div dangerouslySetInnerHTML={{ __html: item.clinical }} />
+            <SignedIn>
+              <div dangerouslySetInnerHTML={{ __html: item.clinical }} />
+            </SignedIn>
+            <SignedOut>
+              <p>This section is available for free to registered users. <a href="/sign-up" className={styles.link}>Sign up here</a>.</p>
+            </SignedOut>
           </div>
       </article>
     </main>
