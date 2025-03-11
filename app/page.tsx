@@ -1,14 +1,5 @@
 import ThreeColumnSection from '../components/threePartBanner';
 
-interface Part {
-  title: string;
-  date: string;
-  imageUrl: string;
-  authors?: string[];
-  isPro?: boolean;
-  description?: string;
-}
-
 export default function Home() {
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-4 sm:p-20 font-[family-name:var(--font-geist-sans)]">
