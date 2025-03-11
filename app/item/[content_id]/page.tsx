@@ -51,7 +51,7 @@ export default async function ItemPage({ params }: { params: Promise<{ content_i
               <div dangerouslySetInnerHTML={{ __html: item.clinical }} />
             </SignedIn>
             <SignedOut>
-              <p>This section is available for free to registered users. <a href="/sign-up" className={styles.link}>Sign up here</a>.</p>
+              <p>This section is available for free to registered users. Sign up using the options that appear at the top of this page.</p>
             </SignedOut>
           </div>
       </article>
