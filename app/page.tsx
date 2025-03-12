@@ -1,16 +1,25 @@
 import ThreeColumnSection from '../components/threePartBanner';
+import ResearchSection from '../components/ResearchSection';
+import PodcastsSection from '../components/PodcastsSection';
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-4 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-4 row-start-2 items-center sm:items-start mt-[-20px]">
-        <div>
-          {/* Three Part Banner */}
-          <ThreeColumnSection />
-          {/* More content */}
+    <div className="min-h-screen">
+      {/* Pad the top to accommodate the negative margin */}
+      <div className="pt-40"></div>
+      
+      {/* Three Part Banner */}
+      <ThreeColumnSection />
+      
+      {/* Content sections */}
+      <div className="container mx-auto px-4 md:px-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <ResearchSection />
+          <PodcastsSection />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
+      </div>
+      
+      <footer className="mt-20 flex gap-6 flex-wrap items-center justify-center">
         {/* Footer content here */}
       </footer>
     </div>

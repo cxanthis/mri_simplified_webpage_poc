@@ -30,8 +30,8 @@ export default function Navbar() {
             <Link href="/news" className="text-gray-900 hover:text-blue-600 font-medium">
               News
             </Link>
-            <Link href="/newsletters" className="text-gray-900 hover:text-blue-600 font-medium">
-              Newsletters
+            <Link href="/research" className="text-gray-900 hover:text-blue-600 font-medium">
+              Research
             </Link>
             <Link href="/podcasts" className="text-gray-900 hover:text-blue-600 font-medium">
               Podcasts
