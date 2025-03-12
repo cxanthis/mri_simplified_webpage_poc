@@ -27,12 +27,24 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+  // Toggle this flag to enable/disable the ribbon
+  const showAnnouncement = false; // Change to false to hide the ribbon
+
   return (
     <ClerkProvider>
       <html lang="en">
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
           <Navbar />
+          {/* Container for alignment */}
+          {showAnnouncement && (
+            <div className="w-full flex justify-center mt-6">
+              <div className="w-full max-w-screen-lg px-2 sm:px-6 lg:px-12 bg-black text-white text-center py-2 mb-0 animate-flash">
+                🚀 Exciting updates coming soon! Stay tuned!
+              </div>
+            </div>
+          )}
           <main className="container mx-auto px-4 md:px-6 min-h-screen">{children}</main>
           <Footer />
         </body>

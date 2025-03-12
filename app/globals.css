@@ -38,3 +38,13 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-sans), sans-serif;
   margin-left: 100px; /* Significantly increased left margin for more space */
 }
+
+@keyframes flash {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+.animate-flash {
+  animation: flash 3s 1.5; /* flash 2s infinite */
+}
+

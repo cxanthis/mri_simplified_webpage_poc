@@ -35,7 +35,7 @@ const cardData: CardItem[] = [
 
 export default function ThreeColumnSection() {
   return (
-    <section className="w-full px-2 sm:px-6 lg:px-12 py-8 relative -mt-10">
+    <section className="w-full px-2 sm:px-6 lg:px-12 py-8 relative -mt-40">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {cardData.map((item, index) => (
             <Link href={item.link} key={index} className="relative group block transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
