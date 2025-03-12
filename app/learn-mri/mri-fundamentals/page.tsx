@@ -1,9 +1,17 @@
 import SanityArticlesMRIFundamentals from "../../../components/SanityArticlesMRIFundamentals";
+import Breadcrumbs from "../../../components/Breadcrumbs";
 
-export default function LearnMRI() {
+const LearnMRI: React.FC = () => {
+  const breadcrumbs = [
+    { label: "Home", href: "/" },
+    { label: "Learn MRI", href: "/learn-mri" },
+    { label: "MRI Fundamentals" }
+  ];
+
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-4 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-4 row-start-2 items-center sm:items-start mt-[-40px]">
+        <Breadcrumbs breadcrumbs={breadcrumbs} />
         <h1 className="text-3xl font-bold">MRI Fundamentals</h1>
         <div className="max-w-4xl space-y-4">
           <p>
@@ -23,4 +31,6 @@ export default function LearnMRI() {
       </footer>
     </div>
   );
-}
+};
+
+export default LearnMRI;
