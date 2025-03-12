@@ -1,6 +1,7 @@
 import ThreeColumnSection from '../components/threePartBanner';
 import ResearchSection from '../components/ResearchSection';
 import PodcastsSection from '../components/PodcastsSection';
+import Banner from '../components/EbookBanner';
 
 export default function Home() {
   return (
@@ -17,6 +18,13 @@ export default function Home() {
           <ResearchSection />
           <PodcastsSection />
         </div>
+
+        {/* Clickable Banner */}
+        {/* Banner with extra margin */}
+        <div className="mt-20">
+          <Banner />
+        </div>
+
       </div>
       
       <footer className="mt-20 flex gap-6 flex-wrap items-center justify-center">
