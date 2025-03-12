@@ -53,15 +53,31 @@ export default async function SanityArticlesMRIFundamentals() {
   return (
     <nav className="w-full">
       <ul className="mt-4 flex flex-col gap-2 pl-4">
-        {articles.map(article => {
-          const depth = article.chapter_id.split('.').length; // Depth based on number of levels
-          const indent = { marginLeft: `${(depth - 1) * 20}px` }; // 0px indent for level 1, 20px for level 2, etc.
+        {articles.map((article) => {
+          // Determine the depth and calculate the indentation
+          const parts = article.chapter_id.split(".");
+          const indent = { marginLeft: `${(parts.length - 1) * 20}px` };
+
+          // Items with more than two parts are clickable
+          const isClickable = parts.length > 2;
+
           return (
             <li key={article.content_id} style={indent}>
-              <Link href={`/item/${article.content_id}`} className="hover:underline">
-                <span className="font-mono mr-2">{article.chapter_id}</span>
-                {article.title}
-              </Link>
+              {isClickable ? (
+                <Link
+                  href={`/item/${article.content_id}`}
+                  className="hover:underline cursor-pointer"
+                >
+                  <span className="font-mono mr-2">{article.chapter_id}</span>
+                  {article.title}
+                </Link>
+              ) : (
+                // Render inactive items in bold
+                <span className="font-bold">
+                  <span className="font-mono mr-2">{article.chapter_id}</span>
+                  {article.title}
+                </span>
+              )}
             </li>
           );
         })}
