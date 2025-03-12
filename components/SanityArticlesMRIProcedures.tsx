@@ -53,14 +53,18 @@ export default async function SanityArticlesMRIProcedures() {
   return (
     <nav className="w-full">
       <ul className="mt-4 flex flex-col gap-2 pl-4">
-        {articles.map(article => (
-          <li key={article.content_id}>
-            <Link href={`/item/${article.content_id}`} className="hover:underline">
-              <span className="font-mono mr-2">{article.chapter_id}</span>
-              {article.title}
-            </Link>
-          </li>
-        ))}
+        {articles.map(article => {
+          const depth = article.chapter_id.split('.').length; // Depth based on number of levels
+          const indent = { marginLeft: `${(depth - 1) * 20}px` }; // 0px indent for level 1, 20px for level 2, etc.
+          return (
+            <li key={article.content_id} style={indent}>
+              <Link href={`/item/${article.content_id}`} className="hover:underline">
+                <span className="font-mono mr-2">{article.chapter_id}</span>
+                {article.title}
+              </Link>
+            </li>
+          );
+        })}
       </ul>
     </nav>
   );
