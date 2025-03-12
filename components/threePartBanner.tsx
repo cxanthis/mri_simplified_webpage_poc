@@ -12,24 +12,24 @@ interface CardItem {
 const cardData: CardItem[] = [
   {
     title: 'MRI Fundamentals',
-    topics: '4 sections/100 topics',
+    topics: '6 chapters/154 topics',
     description: 'Learn the basics on MRI',
     imageUrl: '/mri_fundamentals.jpg',
-    link: '/learn-mri',
+    link: '/learn-mri/mri-fundamentals',
   },
   {
     title: 'MRI Procedures',
-    topics: '10 sections/39 topics',
+    topics: '4 chapters/72 topics',
     description: 'Learn how to use MRI with patients',
     imageUrl: '/mri_procedures.jpg',
-    link: '/learn-mri',
+    link: '/learn-mri/mri-procedures',
   },
   {
     title: 'MRI Safety',
-    topics: '8 sections/235 topics',
+    topics: '4 chapters/138 topics',
     description: 'Learn everything about MRI safety',
     imageUrl: '/mri_safety.jpg',
-    link: '/learn-mri',
+    link: '/learn-mri/mri-safety',
   },
 ];
 
