@@ -54,7 +54,12 @@ export default function MRIFundamentalsContent() {
           title
         }`;
         const data: Article[] = await client.fetch(query);
-
+        console.log("Fetched articles:", data);  // Log the fetched data
+  
+        if (!data.length) {
+          console.warn("No articles were returned from the query. Check your dataset and query.");
+        }
+  
         const sortedData = data.sort((a, b) => {
           const numA = parseChapterId(a.chapter_id);
           const numB = parseChapterId(b.chapter_id);
@@ -65,16 +70,15 @@ export default function MRIFundamentalsContent() {
           }
           return 0;
         });
-
+        console.log("Sorted articles:", sortedData); // Log sorted data
         setArticles(sortedData);
       } catch (error) {
         console.error("Error fetching articles:", error);
         setArticles([]);
       }
     }
-
     fetchArticles();
-  }, []);
+  }, []);  
 
   async function fetchItemContent(contentId: string) {
     setLoading(true);
