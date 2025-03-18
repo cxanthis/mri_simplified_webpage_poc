@@ -35,9 +35,9 @@ interface ResearchTopic {
 export default async function ResearchTopicPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const { slug } = params;
+  const { slug } = await params;
   if (!slug) {
     throw new Error('Missing slug parameter in dynamic route.');
   }
