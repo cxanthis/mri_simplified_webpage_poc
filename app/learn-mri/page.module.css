@@ -22,29 +22,50 @@
     margin-top: 2rem;
   }
   
-  .tile {
-    padding: 2rem;
-    border: 1px solid #eaeaea; /* subtle border to separate each tile */
-    border-radius: 8px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    background-color: transparent;
-  }
-  
-  .tile:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  .tile p {
+    font-size: 1.3rem;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
   }
   
   .tile h2 {
-    font-size: 2rem;
+    font-size: 1.8rem;
+    line-height: 1.4;
+    margin-top: 1.5rem;
     margin-bottom: 1rem;
   }
   
-  /* New rule for <p> elements within .tile */
-  .tile p {
-    font-size: 1.125rem; /* Slightly larger font size for better readability */
-    line-height: 1.8;
-    margin-bottom: 1.5rem; /* Space between paragraphs */
+  .tile h3 {
+    font-size: 1.5rem;
+    line-height: 1.4;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .tile a {
+    color: #dc2626;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  
+  .tile a:hover {
+    text-decoration: underline;
+  }
+  
+  .tile .imageCaption {
+    font-size: 1.2rem;
+    line-height: 1.4;
+    margin-top: 0.8rem;
+  }
+  
+  .tile .imageCaption a {
+    color: #dc2626;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  
+  .tile .imageCaption a:hover {
+    text-decoration: underline;
   }
 
   .warning {
