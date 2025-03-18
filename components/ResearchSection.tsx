@@ -1,38 +1,25 @@
 import Link from 'next/link';
+import client from '../sanityClient'; // Adjust the path if needed
 
 interface ResearchItem {
   category: string;
-  analysisType: string;
+  researchType: string;
   title: string;
-  date: string;
-  link: string;
+  slug: {
+    current: string;
+  };
 }
 
-const researchData: ResearchItem[] = [
-  {
-    category: 'MRI Fundamentals',
-    analysisType: 'Literature review',
-    title: "What is the effect of magnetic field strength on MRI image quality?",
-    date: 'February 28, 2025',
-    link: '/research-topic/what-is-the-effect-of-magnetic-field-strength-on-mri-image-quality'
-  },
-  {
-    category: 'Deeptech',
-    analysisType: 'Case study',
-    title: 'What is the difference between the different types of MRI simulators?',
-    date: 'February 26, 2025',
-    link: '/research/mri-simulators'
-  },
-  {
-    category: 'MR protocols',
-    analysisType: 'Literature review',
-    title: 'The use of T1 mapping in the diagnosis of myocardial infarction',
-    date: 'February 12, 2025',
-    link: '/research/t1-mapping-myocardial-infarction'
-  }
-];
+export default async function ResearchSection() {
+  // Query the latest three researchTopics ordered by date (newest first)
+  const query = `*[_type == "researchTopics"] | order(createdAt desc)[0...3]{
+    title,
+    category,
+    researchType,
+    slug
+  }`;
+  const researchData: ResearchItem[] = await client.fetch(query);
 
-export default function ResearchSection() {
   return (
     <section className="w-full mt-16">
       {/* Black horizontal divider line */}
@@ -40,7 +27,10 @@ export default function ResearchSection() {
 
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Research topics</h2>
-        <Link href="/research" className="text-black-600 hover:underline flex items-center">
+        <Link
+          href="/research"
+          className="text-black-600 hover:underline flex items-center"
+        >
           More Research topics &rarr;
         </Link>
       </div>
@@ -50,12 +40,18 @@ export default function ResearchSection() {
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-grow">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-red-600 font-medium">{item.category}</span>
+                  <span className="text-red-600 font-medium">
+                    {item.category}
+                  </span>
                   <span className="text-gray-500">•</span>
-                  <span className="text-gray-500">{item.analysisType}</span>
+                  <span className="text-gray-500">
+                    {item.researchType}
+                  </span>
                 </div>
-                <Link href={item.link} className="group">
-                  <h3 className="text-xl font-bold mb-2 group-hover:text-blue-600 transition-colors">{item.title}</h3>
+                <Link href={`/research-topic/${item.slug.current}`} className="group">
+                  <h3 className="text-xl font-bold mb-2 group-hover:text-blue-600 transition-colors">
+                    {item.title}
+                  </h3>
                 </Link>
               </div>
             </div>
