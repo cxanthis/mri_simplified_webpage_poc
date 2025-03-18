@@ -1,13 +1,23 @@
+"use client";
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
   SignInButton,
   SignUpButton,
   SignedIn,
   SignedOut,
   UserButton,
-} from '@clerk/nextjs'
+} from '@clerk/nextjs';
 
 export default function Navbar() {
+  const pathname = usePathname();
+
+  const isActive = (path: string) => pathname === path || pathname.startsWith(`${path}/`);
+
+  const linkClass = (path: string) =>
+    `font-medium ${isActive(path) ? 'text-[#dc2626] border-b-2 border-[#dc2626]' : 'text-gray-900 hover:text-[#dc2626]'}`;
+
   return (
     <nav className="border-b border-gray-200">
       <div className="container mx-auto px-4 md:px-6">
@@ -15,33 +25,43 @@ export default function Navbar() {
           <div className="flex items-center">
             <button className="md:hidden p-2 mr-2">
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
               </svg>
             </button>
             <Link href="/" className="text-3xl font-bold">
               MRI simplified
             </Link>
           </div>
-          
+
           <div className="hidden md:flex space-x-8">
-            <Link href="/learn-mri" className="text-gray-900 hover:text-blue-600 font-medium">
+            <Link href="/learn-mri" className={linkClass('/learn-mri')}>
               Learn MRI
             </Link>
-            <Link href="/news" className="text-gray-900 hover:text-blue-600 font-medium">
+            <Link href="/news" className={linkClass('/news')}>
               News
             </Link>
-            <Link href="/research-topic" className="text-gray-900 hover:text-blue-600 font-medium">
+            <Link href="/research-topic" className={linkClass('/research-topic')}>
               Research
             </Link>
-            <Link href="/podcasts" className="text-gray-900 hover:text-blue-600 font-medium">
+            <Link href="/podcasts" className={linkClass('/podcasts')}>
               Podcasts
             </Link>
           </div>
-          
+
           <div className="flex items-center gap-4">
             <button className="p-2 mr-2">
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
               </svg>
             </button>
             <SignedOut>
