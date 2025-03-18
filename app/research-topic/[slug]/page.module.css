@@ -1,0 +1,161 @@
+/* Existing styles… */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Inter', sans-serif;
+  background-color: #fff;
+  color: #333;
+}
+
+.title {
+  text-align: left;
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  text-align: left;
+  font-size: 1.5rem;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.divider {
+  border: none;
+  border-top: 2px solid #000;
+  width: 50px;
+  margin: 2rem 0;
+}
+
+.body {
+  /* Body content styling remains as before */
+}
+
+.body p {
+  font-size: 1.3rem;
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+}
+
+.body h2 {
+  font-size: 1.8rem;
+  line-height: 1.4;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.body h3 {
+  font-size: 1.5rem;
+  line-height: 1.4;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.body a {
+  color: #dc2626;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.body a:hover {
+  text-decoration: underline;
+}
+
+.body .imageCaption {
+  font-size: 1.2rem;
+  line-height: 1.4;
+  margin-top: 0.8rem;
+}
+
+.body .imageCaption a {
+  color: #dc2626;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.body .imageCaption a:hover {
+  text-decoration: underline;
+}
+
+/* --- New Styles for the Digest Box --- */
+.digestBox {
+  background-color: #e0e0e0;  /* A subtle light-blue background */
+  border-left: 4px solid #dc2626; /* Accent border matching link color */
+  padding: 1rem;
+  margin: 1.5rem 0;
+  border-radius: 4px;
+}
+
+.digestText {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: #333;
+}
+
+.digestTitle {
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+
+/* --- Styles for the Body Wrapper and Sidebar --- */
+.bodyWrapper {
+  position: relative;
+}
+
+.sidebar {
+  float: right;
+  width: 300px;
+  margin: 0 0 1rem 1.5rem;
+}
+
+.bodyWrapper::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.relatedArticlesSection {
+  padding: 1.5rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.relatedArticlesHeading {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.relatedArticlesList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.relatedArticleItem {
+  margin-bottom: 0.75rem;
+}
+
+.relatedArticleLink {
+  text-decoration: none;
+  color: #dc2626;
+  transition: color 0.2s ease;
+}
+
+.relatedArticleLink:hover {
+  text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .sidebar {
+    float: none;
+    width: 100%;
+    margin: 0 0 1rem 0;
+  }
+}

@@ -14,7 +14,7 @@ const researchData: ResearchItem[] = [
     analysisType: 'Literature review',
     title: "What is the effect of magnetic field strength on MRI image quality?",
     date: 'February 28, 2025',
-    link: '/research/magnetic-field-strength-image-quality'
+    link: '/research-topic/what-is-the-effect-of-magnetic-field-strength-on-mri-image-quality'
   },
   {
     category: 'Deeptech',
