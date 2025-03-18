@@ -28,7 +28,7 @@ export default async function ResearchTopicsPage() {
 
   return (
     <main className="w-full mt-16 px-4" >
-      <h1 className="text-3xl font-bold mb-8">Research Topics</h1>
+      <h1 className={styles.title}>Research Topics</h1>
       <div className="flex flex-col gap-8">
         {researchItems.map((item, index) => (
           <div
