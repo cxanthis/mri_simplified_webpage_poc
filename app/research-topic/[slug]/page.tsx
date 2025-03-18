@@ -5,13 +5,16 @@ import imageUrlBuilder from '@sanity/image-url';
 
 // Create a URL builder using your Sanity client
 const builder = imageUrlBuilder(client);
-function urlFor(source: any) {
+// Derive the SanityImageSource type from the builder's image function.
+type SanityImageSource = Parameters<typeof builder.image>[0];
+
+function urlFor(source: SanityImageSource) {
   return builder.image(source);
 }
 
 interface ImageItem {
   image: {
-    asset: any;
+    asset: SanityImageSource;
     caption?: string;
   };
   position: number;
@@ -37,6 +40,7 @@ export default async function ResearchTopicPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  // Await the params before destructuring
   const { slug } = await params;
   if (!slug) {
     throw new Error('Missing slug parameter in dynamic route.');
@@ -100,7 +104,7 @@ export default async function ResearchTopicPage({
       {/* Digest Callout Box */}
       {topic.simplified && (
         <div className={styles.digestBox}>
-        <h3 className={styles.digestTitle}>1-min digest</h3>
+          <h3 className={styles.digestTitle}>1-min digest</h3>
           <div
             className={styles.digestText}
             dangerouslySetInnerHTML={{ __html: topic.simplified }}
