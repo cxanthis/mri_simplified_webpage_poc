@@ -15,6 +15,11 @@ interface ResearchTopicsPageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
+// Function to strip HTML tags from a string
+const stripHtmlTags = (html: string): string => {
+  return html.replace(/<[^>]*>?/gm, '');
+};
+
 export default async function ResearchTopicsPage({ searchParams }: ResearchTopicsPageProps) {
   const params = await searchParams;
   const itemsPerPage = 10;
@@ -57,7 +62,7 @@ export default async function ResearchTopicsPage({ searchParams }: ResearchTopic
                   {item.title}
                 </h3>
               </Link>
-              <p className="text-gray-700">{item.teaser}</p>
+              <p className="text-gray-700">{stripHtmlTags(item.teaser)}</p>
             </div>
           </div>
         ))}
