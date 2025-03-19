@@ -101,8 +101,8 @@ export default function MRIFundamentalsContent() {
     }
   }
 
-  const handleArticleClick = async (slug: any) => {
-    const slugString = typeof slug === "object" && slug.current ? slug.current : slug;
+  const handleArticleClick = async (slug: string) => {
+    const slugString = slug;
     router.push(`/learn-mri/mri-procedures?slug=${slugString}`, { scroll: false });
     await fetchItemContent(slugString);
   };
