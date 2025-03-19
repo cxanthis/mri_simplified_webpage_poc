@@ -17,6 +17,7 @@ interface Article {
   chapter_id: string;
   content_id: string;
   title: string;
+  slug: string;
 }
 
 interface Item {
@@ -28,22 +29,22 @@ interface Item {
 
 const parseChapterId = (id: string) => id.split('.').map(num => parseInt(num, 10));
 
-export default function MRIProceduresContent() {
+export default function MRIFundamentalsContent() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Derive selectedContentId directly from the URL's query parameter
-  const selectedContentId = searchParams?.get('content_id');
+  // Extract the selectedSlug directly from the query parameters
+  const selectedSlug = searchParams?.get('slug');
 
   useEffect(() => {
-    console.log('Selected content_id:', selectedContentId);
-    if (selectedContentId) {
-      fetchItemContent(selectedContentId);
+    console.log('Selected slug:', selectedSlug);
+    if (selectedSlug) {
+      fetchItemContent(selectedSlug);
     }
-  }, [selectedContentId]);
+  }, [selectedSlug]);
 
   useEffect(() => {
     async function fetchArticles() {
@@ -51,10 +52,16 @@ export default function MRIProceduresContent() {
         const query = `*[_type == "articles" && chapter_id match "2*"] {
           chapter_id,
           content_id,
-          title
+          title,
+          "slug": slug.current
         }`;
         const data: Article[] = await client.fetch(query);
-
+        console.log("Fetched articles:", data);  // Log fetched data
+  
+        if (!data.length) {
+          console.warn("No articles were returned from the query. Check your dataset and query.");
+        }
+  
         const sortedData = data.sort((a, b) => {
           const numA = parseChapterId(a.chapter_id);
           const numB = parseChapterId(b.chapter_id);
@@ -65,28 +72,26 @@ export default function MRIProceduresContent() {
           }
           return 0;
         });
-
+        console.log("Sorted articles:", sortedData); // Log sorted data
         setArticles(sortedData);
       } catch (error) {
         console.error("Error fetching articles:", error);
         setArticles([]);
       }
     }
-
     fetchArticles();
-  }, []);
+  }, []);  
 
-  async function fetchItemContent(contentId: string) {
+  async function fetchItemContent(slug: string) {
     setLoading(true);
     try {
-      const contentIdNumber = Number(contentId);
-      const query = `*[content_id == $content_id][0]{
+      const query = `*[slug.current == $slug][0]{
         title,
         body,
         advanced,
         clinical
       }`;
-      const item: Item | null = await client.fetch(query, { content_id: contentIdNumber });
+      const item: Item | null = await client.fetch(query, { slug });
       setSelectedItem(item);
     } catch (error) {
       console.error("Error fetching item content:", error);
@@ -96,9 +101,10 @@ export default function MRIProceduresContent() {
     }
   }
 
-  const handleArticleClick = async (contentId: string) => {
-    router.push(`/learn-mri/mri-procedures?content_id=${contentId}`, { scroll: false });
-    await fetchItemContent(contentId);
+  const handleArticleClick = async (slug: any) => {
+    const slugString = typeof slug === "object" && slug.current ? slug.current : slug;
+    router.push(`/learn-mri/mri-procedures?slug=${slugString}`, { scroll: false });
+    await fetchItemContent(slugString);
   };
 
   return (
@@ -113,7 +119,7 @@ export default function MRIProceduresContent() {
                   const parts = article.chapter_id.split(".");
                   const indent = { marginLeft: `${(parts.length - 1) * 20}px` };
                   const isClickable = parts.length > 2;
-                  const isActive = selectedContentId === article.content_id.toString();
+                  const isActive = selectedSlug === article.slug;
                   return (
                     <li 
                       key={article.content_id} 
@@ -122,7 +128,7 @@ export default function MRIProceduresContent() {
                     >
                       {isClickable ? (
                         <a
-                          onClick={() => handleArticleClick(article.content_id)}
+                          onClick={() => handleArticleClick(article.slug)}
                           className={`hover:underline cursor-pointer ${isActive ? 'font-medium text-blue-600' : ''}`}
                         >
                           <span className="font-mono mr-1">{article.chapter_id}</span>

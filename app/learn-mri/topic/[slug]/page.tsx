@@ -1,6 +1,6 @@
-// app/item/[content_id]/page.tsx
+// app/item/[slug]/page.tsx
 import { notFound } from 'next/navigation';
-import client from '../../../sanityClient';
+import client from '../../../../sanityClient';
 import styles from './page.module.css';
 import { SignedIn, SignedOut } from '@clerk/nextjs';
 
@@ -11,24 +11,23 @@ interface Item {
   clinical: string;
 }
 
-export default async function ItemPage({ params }: { params: Promise<{ content_id: string }> }) {
+export default async function ItemPage({ params }: { params: Promise<{ slug: string }> }) {
   if (!params) {
     throw new Error("Missing params in dynamic route.");
   }
 
-  // ✅ FIX: Await params before accessing content_id
+  // Await params before accessing the slug
   const resolvedParams = await params;
-  const { content_id } = resolvedParams;
-  const contentIdNumber = Number(content_id);
+  const { slug } = resolvedParams;
 
-  const query = `*[content_id == $content_id][0]{
+  const query = `*[slug.current == $slug][0]{
     title,
     body,
     advanced,
     clinical
   }`;
 
-  const item: Item | null = await client.fetch(query, { content_id: contentIdNumber });
+  const item: Item | null = await client.fetch(query, { slug });
 
   if (!item) {
     notFound();
@@ -45,15 +44,17 @@ export default async function ItemPage({ params }: { params: Promise<{ content_i
           <h2>Advanced Concepts for the Enthusiast</h2>
           <div dangerouslySetInnerHTML={{ __html: item.advanced }} />
         </div>
-          <div className={styles.tile}>
-            <h2>Clinical Relevance</h2>
-            <SignedIn>
-              <div dangerouslySetInnerHTML={{ __html: item.clinical }} />
-            </SignedIn>
-            <SignedOut>
-              <p>This section is available for free to registered users. Sign up using the options that appear at the top of this page.</p>
-            </SignedOut>
-          </div>
+        <div className={styles.tile}>
+          <h2>Clinical Relevance</h2>
+          <SignedIn>
+            <div dangerouslySetInnerHTML={{ __html: item.clinical }} />
+          </SignedIn>
+          <SignedOut>
+            <p>
+              This section is available for free to registered users. Sign up using the options that appear at the top of this page.
+            </p>
+          </SignedOut>
+        </div>
       </article>
     </main>
   );

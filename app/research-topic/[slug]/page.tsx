@@ -21,7 +21,7 @@ interface ImageItem {
 }
 
 interface Article {
-  content_id: number;
+  slug: { current: string };
   title: string;
 }
 
@@ -60,7 +60,7 @@ export default async function ResearchTopicPage({
       position
     },
     relatedTopics[]->{
-      content_id,
+      slug,
       title
     }
   }`;
@@ -120,9 +120,9 @@ export default async function ResearchTopicPage({
               <h2 className={styles.relatedArticlesHeading}>Related MR topics</h2>
               <ul className={styles.relatedArticlesList}>
                 {topic.relatedTopics.map((article) => (
-                  <li key={article.content_id} className={styles.relatedArticleItem}>
+                  <li key={article.slug.current} className={styles.relatedArticleItem}>
                     <a
-                      href={`/item/${article.content_id}`}
+                      href={`/learn-mri/topic/${article.slug.current}`}
                       className={styles.relatedArticleLink}
                     >
                       {article.title}
