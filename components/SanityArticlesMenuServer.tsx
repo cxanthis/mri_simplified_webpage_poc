@@ -1,5 +1,4 @@
 import { createClient } from "next-sanity";
-import Link from "next/link";
 import InteractiveMenu from "./InteractiveMenuClient"; // Direct import of client component
 
 const client = createClient({

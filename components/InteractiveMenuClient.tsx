@@ -2,7 +2,7 @@
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
 // Example icons from react-icons
-import { FaCheckCircle, FaRegCircle, FaChevronRight, FaChevronDown } from "react-icons/fa";
+import { FaChevronRight, FaChevronDown } from "react-icons/fa";
 
 interface Article {
   chapter_id: string;
@@ -64,15 +64,6 @@ export default function InteractiveMenu({
       }
       return newSet;
     });
-  };
-
-  // For demonstration, we'll assume anything at level > 1 might be "completed"
-  // or "in progress." In real usage, you'd fetch a "status" or "completed" field
-  // from your data, or track user progress some other way.
-  const isCompleted = (node: TreeNode) => {
-    // Example: Mark sections deeper than top-level as completed
-    // Or you can return a boolean from your actual data.
-    return node.chapter_id.split(".").length > 1;
   };
 
   // Example "time" or "modules" text. Adjust logic as needed.

@@ -1,6 +1,7 @@
 // app/learn-mri/page.tsx
 import React from "react";
 import styles from "./page.module.css";
+import Link from "next/link";
 
 export default function LearnMRITextPage() {
   return (
@@ -24,24 +25,24 @@ export default function LearnMRITextPage() {
               and topics, allowing you to dive deeply into the fascinating world of MRI.
             </p>
             <div className="flex justify-between mt-10 pl-15 pr-15 w-full">
-              <a 
+              <Link 
                 href="/learn-mri/topic/mri-fundamentals" 
                 className="text-blue-600 hover:underline text-2xl"
               >
                 MRI Fundamentals
-              </a>
-              <a 
+              </Link>
+              <Link 
                 href="/learn-mri/topic/mri-procedures" 
                 className="text-blue-600 hover:underline text-2xl"
               >
                 MRI Procedures
-              </a>
-              <a 
+              </Link>
+              <Link 
                 href="/learn-mri/topic/mri-safety" 
                 className="text-blue-600 hover:underline text-2xl"
               >
                 MRI Safety
-              </a>
+              </Link>
             </div>
           </div>
         </article>
