@@ -1,0 +1,59 @@
+/* app/research-topic/page.module.css */
+  
+.tile {
+  padding: 2rem;
+  border: 1px solid #eaeaea; /* subtle border to separate each tile */
+  border-radius: 8px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background-color: transparent;
+}
+
+.tile:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  text-align: left;
+  font-size: 3rem;
+  margin-bottom: 2rem;
+}
+
+/* Pagination styles */
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.paginationButton {
+  border: 1px solid #eaeaea;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  margin: 0 0.25rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.paginationButton:hover {
+  background-color: #f0f0f0;
+}
+
+/* Optional: Active page styling */
+.activeButton {
+  background-color: #eb5587; /* Blue-500 */
+  color: #ffffff;
+}
+
+.thumbnailWrapper {
+  /* Adjust the width and ensure proper spacing */
+  width: 150px;
+  flex-shrink: 0;
+}
+
+.thumbnail {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 4px; /* Optional: for rounded corners */
+}
