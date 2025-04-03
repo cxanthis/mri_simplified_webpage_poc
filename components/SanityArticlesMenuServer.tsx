@@ -1,6 +1,6 @@
-// SanityArticlesMenuServer.tsx
 import { createClient } from "next-sanity";
 import Link from "next/link";
+import InteractiveMenu from "./InteractiveMenuClient"; // Direct import of client component
 
 const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
@@ -15,8 +15,8 @@ interface Article {
   title: string;
 }
 
-// Helper function to parse chapter_id for proper sorting
-const parseChapterId = (id: string) => id.split('.').map(num => parseInt(num, 10));
+const parseChapterId = (id: string) =>
+  id.split(".").map((num) => parseInt(num, 10));
 
 async function getArticles() {
   try {
@@ -42,6 +42,33 @@ async function getArticles() {
   }
 }
 
+interface TreeNode extends Article {
+  children: TreeNode[];
+}
+
+function buildTree(articles: Article[]): TreeNode[] {
+  const tree: TreeNode[] = [];
+  const map: Record<string, TreeNode> = {};
+
+  articles.forEach((article) => {
+    const node: TreeNode = { ...article, children: [] };
+    map[article.chapter_id] = node;
+
+    const parts = article.chapter_id.split(".");
+    if (parts.length === 1) {
+      tree.push(node);
+    } else {
+      const parentId = parts.slice(0, parts.length - 1).join(".");
+      if (map[parentId]) {
+        map[parentId].children.push(node);
+      } else {
+        tree.push(node);
+      }
+    }
+  });
+  return tree;
+}
+
 interface MenuProps {
   activeSlug?: string;
 }
@@ -53,35 +80,26 @@ export default async function SanityArticlesMenuServer({ activeSlug }: MenuProps
     return <p>No articles found.</p>;
   }
 
-  return (
-    <nav className="w-full">
-      <ul className="mt-4 flex flex-col gap-2 pl-4">
-        {articles.map((article) => {
-          const parts = article.chapter_id.split(".");
-          const indent = { marginLeft: `${(parts.length - 1) * 20}px` };
-          const isClickable = parts.length > 2;
-          const isActive = activeSlug === article.slug.current;
-          const activeClasses = isActive ? "bg-blue-200 font-bold" : "";
+  const activeArticle = articles.find(
+    (article) => article.slug.current === activeSlug
+  );
 
-          return (
-            <li key={article.slug.current} style={indent}>
-              {isClickable ? (
-                <Link
-                  href={`/learn-mri/topic/${article.slug.current}`}
-                  className={`hover:underline cursor-pointer ${activeClasses}`}
-                >
-                  <span className="font-mono mr-2">{article.chapter_id}</span>
-                  {article.title}
-                </Link>
-              ) : (
-                <span className={`font-bold ${activeClasses}`}>
-                  <span className="font-mono mr-2">{article.chapter_id}</span>
-                  {article.title}
-                </span>
-              )}
-            </li>
-          );
-        })}
+  const tree = buildTree(articles);
+
+  // Example "progress" or "completed" percentage - you can replace this
+  // with real data if you have it in your documents or compute it.
+  const progressPercentage = 54;
+
+  return (
+    <nav className="w-full border-gray-200 border bg-white">
+      {/* Header section for the menu (title, progress, etc.) */}
+      <div className="flex items-center justify-between px-4 py-3 border-gray-200 border-b">
+        <h2 className="text-[1.3rem] font-bold">Learn MRI</h2>
+        <span className="text-sm text-gray-600">{progressPercentage}% completed</span>
+      </div>
+
+      <ul className="flex flex-col">
+        <InteractiveMenu tree={tree} activeArticle={activeArticle} activeSlug={activeSlug} />
       </ul>
     </nav>
   );

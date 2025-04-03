@@ -10,9 +10,9 @@
   }
   
   .title {
-    text-align: center;
-    font-size: 3rem;
-    margin-bottom: 2rem;
+    text-align: left;
+    font-size: 3rem;    
+    margin-top: 1rem;
   }
   
   .tiles {
@@ -67,15 +67,4 @@
   .tile .imageCaption a:hover {
     text-decoration: underline;
   }
-
-  .warning {
-    background-color: #fff3cd; /* Light yellow background */
-    color: #856404; /* Dark yellow/brown text */
-    border: 1px solid #ffeeba; /* Slight border for visibility */
-    padding: 1rem;
-    border-radius: 8px;
-    font-size: 1rem;
-    line-height: 1.5;
-}
-
   

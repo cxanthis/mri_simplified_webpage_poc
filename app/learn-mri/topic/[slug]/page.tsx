@@ -1,9 +1,9 @@
-// app/learn-mri/topic/[slug]/page.tsx
-import { notFound } from 'next/navigation';
-import client from '../../../../sanityClient';
-import styles from './page.module.css';
-import { SignedIn, SignedOut } from '@clerk/nextjs';
-import SanityArticlesMenuServer from '../../../../components/SanityArticlesMenuServer';
+import { notFound } from "next/navigation";
+import client from "../../../../sanityClient";
+import styles from "./page.module.css";
+import { SignedIn, SignedOut } from "@clerk/nextjs";
+import SanityArticlesMenuServer from "../../../../components/SanityArticlesMenuServer";
+import SidebarToggleLayout from "../../../../components/SidebarToggleLayout";
 
 interface Item {
   title: string;
@@ -12,10 +12,84 @@ interface Item {
   clinical: string;
 }
 
-export default async function ItemPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function ItemPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const resolvedParams = await params;
   const { slug } = resolvedParams;
 
+  // If the slug is "mri-fundamentals", render the static content.
+  if (slug === "mri-fundamentals") {
+    return (
+      <SidebarToggleLayout
+        sidebar={<SanityArticlesMenuServer activeSlug={slug} />}
+        main={
+          <article className={styles.tiles}>
+            <h2 className={styles.title}>MRI Fundamentals</h2>
+            <div className={styles.tile}>
+              <p>
+                The MRI Fundamentals section is the cornerstone of this book, laying the groundwork for a thorough understanding of magnetic resonance imaging. Here, you will explore the core principles, physics, and instrumentation behind MRI technology.
+              </p>
+              <p>
+                This part of the book is distinct from the sections covering MRI Procedures and MRI Safety. While the latter focus on the practical application and risk management in clinical settings, the fundamentals ensure that you have a solid grasp of the theoretical concepts essential for interpreting and executing advanced imaging techniques.
+              </p>
+              <p>
+                Whether you are a student, researcher, or medical professional, a deep understanding of MRI Fundamentals will enhance your ability to comprehend the more technical aspects of MRI procedures and maintain high standards of safety in practice.
+              </p>
+            </div>
+          </article>
+        }
+      />
+    );
+  } else if (slug === "mri-procedures") {
+    return (
+      <SidebarToggleLayout
+        sidebar={<SanityArticlesMenuServer activeSlug={slug} />}
+        main={
+          <article className={styles.tiles}>
+            <h2 className={styles.title}>MRI Procedures</h2>
+            <div className={styles.tile}>
+            <p>
+              The MRI Procedures section provides a detailed overview of the operational protocols involved in MRI imaging. In this section, you will find comprehensive guidelines on patient preparation, imaging sequences, and scanning techniques that ensure accurate and high-quality diagnostic results.
+            </p>
+            <p>
+              This part of the book is dedicated to the practical application of MRI technology. It bridges the gap between the theoretical foundations covered in the MRI Fundamentals section and the real-world execution of imaging procedures, offering step-by-step instructions and best practices.
+            </p>
+            <p>
+              Whether you are a technician, radiologist, or student, this section equips you with the essential tools and techniques to perform MRI scans safely and effectively, making it an indispensable resource for mastering clinical imaging.
+            </p>
+            </div>
+          </article>
+        }
+      />
+    );
+  } else if (slug === "mri-safety") {
+    return (
+      <SidebarToggleLayout
+        sidebar={<SanityArticlesMenuServer activeSlug={slug} />}
+        main={
+          <article className={styles.tiles}>
+            <h2 className={styles.title}>MRI Safety</h2>
+            <div className={styles.tile}>
+            <p>
+              The MRI Safety section is focused on the protocols and best practices necessary to maintain a secure imaging environment. It covers essential safety guidelines designed to prevent accidents and protect both patients and healthcare professionals.
+            </p>
+            <p>
+              In this section, you will learn about the potential hazards associated with MRI technology—including strong magnetic fields and radiofrequency energy—and how to mitigate these risks through proper screening, training, and operational procedures.
+            </p>
+            <p>
+              Whether you are a clinician, facility manager, or support staff, the insights provided here will help you establish and maintain a safe working environment, complementing the detailed discussions on MRI Fundamentals and Procedures.
+            </p>
+            </div>
+          </article>
+        }
+      />
+    );
+  }
+
+  // Otherwise, fetch the item from Sanity.
   const query = `*[slug.current == $slug][0]{
     title,
     body,
@@ -30,16 +104,11 @@ export default async function ItemPage({ params }: { params: Promise<{ slug: str
   }
 
   return (
-    <div className="flex">
-      {/* Left-side vertical menu */}
-      <aside className="w-1/4 border-r border-gray-200">
-        <SanityArticlesMenuServer activeSlug={slug} />
-      </aside>
-
-      {/* Main content */}
-      <main className="w-3/4 p-4">
-        <h1 className={styles.title}>{item.title}</h1>
+    <SidebarToggleLayout
+      sidebar={<SanityArticlesMenuServer activeSlug={slug} />}
+      main={
         <article className={styles.tiles}>
+          <h2 className={styles.title}>{item.title}</h2>
           <div className={styles.tile}>
             <div dangerouslySetInnerHTML={{ __html: item.body }} />
           </div>
@@ -59,7 +128,7 @@ export default async function ItemPage({ params }: { params: Promise<{ slug: str
             </SignedOut>
           </div>
         </article>
-      </main>
-    </div>
+      }
+    />
   );
 }
