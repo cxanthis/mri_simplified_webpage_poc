@@ -5,7 +5,16 @@ import imageUrlBuilder from '@sanity/image-url';
 
 const builder = imageUrlBuilder(client);
 
-function urlFor(source: any) {
+// Define a custom type for the Sanity image source
+interface SanityImageSource {
+  asset: {
+    _id: string;
+    url?: string;
+  };
+  alt?: string;
+}
+
+function urlFor(source: SanityImageSource) {
   return builder.image(source);
 }
 
@@ -14,13 +23,7 @@ interface PodcastItem {
   createdAt: string;
   description: string;
   slug: { current: string };
-  coverImage?: {
-    asset: {
-      _id: string;
-      url?: string;
-    };
-    alt?: string;
-  };
+  coverImage?: SanityImageSource;
 }
 
 export default async function PodcastsSection() {
