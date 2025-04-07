@@ -1,11 +1,26 @@
-// page.tsx
 import Link from 'next/link';
+import Image from 'next/image';
 import client from '../../sanityClient';
 import styles from './page.module.css';
 import imageUrlBuilder from '@sanity/image-url';
 
 const builder = imageUrlBuilder(client);
-function urlFor(source: any) {
+
+// Custom types for Sanity image data
+interface SanityAsset {
+  _id?: string;
+  _ref?: string;
+  _type: string;
+  [key: string]: unknown;
+}
+
+interface SanityImageSource {
+  asset: SanityAsset;
+  alt?: string;
+}
+
+// Update urlFor to use the custom type
+function urlFor(source: SanityImageSource) {
   return builder.image(source);
 }
 
@@ -14,10 +29,7 @@ interface PodcastItem {
   publishedAt: string;
   description: string;
   slug: { current: string };
-  coverImage?: {
-    asset: any;
-    alt?: string;
-  };
+  coverImage?: SanityImageSource;
 }
 
 interface PodcastsPageProps {
@@ -84,9 +96,12 @@ export default async function PodcastsPage({ searchParams }: PodcastsPageProps) 
               </div>
               {item.coverImage && item.coverImage.asset && (
                 <div className={styles.thumbnail}>
-                  <img
+                  <Image
                     src={urlFor(item.coverImage).width(150).url()}
                     alt={item.coverImage.alt || item.title}
+                    width={150}
+                    height={100}
+                    className={styles.thumbnail}
                   />
                 </div>
               )}
