@@ -1,11 +1,26 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import client from '../../sanityClient';
 import styles from './page.module.css';
 import imageUrlBuilder from '@sanity/image-url';
 
 const builder = imageUrlBuilder(client);
-function urlFor(source: any) {
+
+function urlFor(source: SanityImageSource) {
   return builder.image(source);
+}
+
+// Custom types for Sanity image source
+interface SanityAsset {
+  _id?: string;
+  _ref?: string;
+  _type: string;
+  [key: string]: unknown;
+}
+
+interface SanityImageSource {
+  asset: SanityAsset;
+  alt?: string;
 }
 
 interface NewsItem {
@@ -14,10 +29,7 @@ interface NewsItem {
   createdAt: string;
   teaser: string;
   slug: { current: string };
-  headerImage?: {
-    asset: any;
-    alt?: string;
-  };
+  headerImage?: SanityImageSource;
 }
 
 interface NewsPageProps {
@@ -101,9 +113,11 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
                 {/* Right side: Thumbnail of header image */}
                 {item.headerImage && item.headerImage.asset && (
                   <div className={styles.thumbnailWrapper}>
-                    <img
+                    <Image
                       src={urlFor(item.headerImage).width(150).height(100).url()}
                       alt={item.headerImage.alt || item.title}
+                      width={150}
+                      height={100}
                       className={styles.thumbnail}
                     />
                   </div>

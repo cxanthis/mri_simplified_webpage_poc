@@ -1,7 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-  output: 'standalone', // Ensures compatibility with Vercel
+  images: {
+    domains: ['cdn.sanity.io'],
+  },
 };
 
 module.exports = nextConfig;
