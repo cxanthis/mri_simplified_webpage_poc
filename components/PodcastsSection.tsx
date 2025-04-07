@@ -1,38 +1,45 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import client from '../sanityClient';
+import imageUrlBuilder from '@sanity/image-url';
 
-interface PodcastItem {
-  category: string;
-  title: string;
-  date: string;
-  imageUrl: string;
-  link: string;
-  description?: string;
+const builder = imageUrlBuilder(client);
+
+function urlFor(source: any) {
+  return builder.image(source);
 }
 
-const podcastData: PodcastItem[] = [
-  {
-    category: 'MRI community',
-    title: 'Erik Hedstrom, MD',
-    date: '10.03.2025',
-    imageUrl: '/erik_hedstrom.jpg',
-    link: '/podcasts/cardiac-mr-lund',
-    description: 'From research to clinical practice'
-  },
-  {
-    category: 'Conferences',
-    title: 'ISMRM (2024)',
-    date: '03.03.2025',
-    imageUrl: '/ismrm_singapore.jpg',
-    link: '/podcasts/ismrm_2024',
-    description: 'Latest trends in MRI'
-  }
-];
+interface PodcastItem {
+  title: string;
+  createdAt: string;
+  description: string;
+  slug: { current: string };
+  coverImage?: {
+    asset: {
+      _id: string;
+      url?: string;
+    };
+    alt?: string;
+  };
+}
 
-export default function PodcastsSection() {
+export default async function PodcastsSection() {
+  // Query the two latest podcasts
+  const query = `*[_type == "podcast"] | order(createdAt desc)[0...2]{
+    title,
+    createdAt,
+    description,
+    slug,
+    coverImage{
+      asset->,
+      alt
+    }
+  }`;
+  const podcastData: PodcastItem[] = await client.fetch(query);
+
   return (
     <section className="w-full mt-16">
-    {/* Black horizontal divider line */}
+      {/* Horizontal divider */}
       <div className="w-full h-[1px] bg-black mb-6"></div>
 
       <div className="flex justify-between items-center mb-4">
@@ -43,20 +50,29 @@ export default function PodcastsSection() {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {podcastData.map((item, index) => (
-          <Link href={item.link} key={index} className="group">
+          <Link href={`/podcasts/${item.slug.current}`} key={index} className="group">
             <div className="relative h-[360px] overflow-hidden rounded-lg">
-              <Image 
-                src={item.imageUrl} 
-                alt={item.title}
-                layout="fill"
-                objectFit="cover"
-                className="transition-transform duration-300 group-hover:scale-105"
-              />
+              {item.coverImage && item.coverImage.asset && (
+                <Image 
+                  src={urlFor(item.coverImage).width(800).url()} 
+                  alt={item.coverImage.alt || item.title}
+                  layout="fill"
+                  objectFit="cover"
+                  className="transition-transform duration-300 group-hover:scale-105"
+                />
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
               <div className="absolute bottom-0 left-0 p-6 text-white">
                 <div className="flex justify-between items-center w-full mb-2">
-                  <span className="text-sm">{item.category}</span>
-                  <span className="text-sm">{item.date}</span>
+                  {/* Fallback category or you can remove it */}
+                  <span className="text-sm">Podcast</span>
+                  <span className="text-sm">
+                    {new Date(item.createdAt).toLocaleDateString('en-US', {
+                      month: 'long',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}
+                  </span>
                 </div>
                 <h3 className="text-2xl font-bold mb-2">{item.title}</h3>
                 {item.description && <p className="text-sm">{item.description}</p>}
