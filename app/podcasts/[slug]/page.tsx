@@ -1,15 +1,6 @@
 import { notFound } from 'next/navigation';
 import client from '../../../sanityClient';
 import styles from './page.module.css';
-import imageUrlBuilder from '@sanity/image-url';
-
-// Create a URL builder using your Sanity client
-const builder = imageUrlBuilder(client);
-type SanityImageSource = Parameters<typeof builder.image>[0];
-
-function urlFor(source: SanityImageSource) {
-  return builder.image(source);
-}
 
 // Converts a YouTube URL to its embed URL format.
 function getYouTubeEmbedUrl(url: string): string {
