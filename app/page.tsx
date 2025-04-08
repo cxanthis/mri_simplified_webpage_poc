@@ -1,6 +1,7 @@
 import ThreeColumnSection from '../components/threePartBanner';
 import ResearchSection from '../components/ResearchSection';
 import PodcastsSection from '../components/PodcastsSection';
+import NewsSection from '../components/NewsSection';
 import Banner from '../components/EbookBanner';
 
 export default function Home() {
@@ -17,6 +18,11 @@ export default function Home() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <ResearchSection />
           <PodcastsSection />
+        </div>
+
+        {/* Content sections */}
+        <div className="grid grid-cols-4 lg:grid-cols-1 gap-8">
+          <NewsSection />
         </div>
 
         {/* Clickable Banner */}
