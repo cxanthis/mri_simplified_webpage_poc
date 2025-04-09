@@ -132,10 +132,9 @@ export async function generateMetadata({
 export default async function ItemPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
 }) {
-  const resolvedParams = await params;
-  const { slug } = resolvedParams;
+  const { slug } = params;
 
   // Render static pages as before.
   if (slug === "mri-fundamentals") {
