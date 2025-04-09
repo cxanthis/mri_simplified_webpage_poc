@@ -63,9 +63,11 @@ const trimTitle = (title: string, maxLength: number = 25): string =>
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: { slug: string } | Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const query = `*[slug.current == $slug][0]{
+  // Await the params since Next.js may provide them as a promise.
+  const resolvedParams = await params;
+  const query = `*[slug.current == $slug][0]{ 
     title,
     seo {
       seoTitle,
@@ -94,7 +96,7 @@ export async function generateMetadata({
       }
     }
   }`;
-  const article = await client.fetch(query, { slug: params.slug });
+  const article = await client.fetch(query, { slug: resolvedParams.slug });
   if (!article) {
     return {
       title: "Article Not Found",
@@ -102,7 +104,6 @@ export async function generateMetadata({
     };
   }
   const seo = article.seo || {};
-
   return {
     title: seo.seoTitle || article.title,
     description: seo.seoDescription || "",
@@ -120,8 +121,7 @@ export async function generateMetadata({
     },
     twitter: {
       title: seo.twitter?.twitterTitle || seo.seoTitle || article.title,
-      description:
-        seo.twitter?.twitterDescription || seo.seoDescription || "",
+      description: seo.twitter?.twitterDescription || seo.seoDescription || "",
       images: seo.twitter?.twitterImage?.asset?.url
         ? [{ url: seo.twitter.twitterImage.asset.url }]
         : undefined,
@@ -132,9 +132,10 @@ export async function generateMetadata({
 export default async function ItemPage({
   params,
 }: {
-  params: { slug: string };
+  params: { slug: string } | Promise<{ slug: string }>;
 }) {
-  const { slug } = params;
+  const resolvedParams = await params;
+  const { slug } = resolvedParams;
 
   // Render static pages as before.
   if (slug === "mri-fundamentals") {
