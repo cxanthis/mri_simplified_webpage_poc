@@ -134,7 +134,8 @@ export default async function ItemPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const { slug } = await Promise.resolve(params);
+  const resolvedParams = await params;
+  const { slug } = resolvedParams;
 
   // Render static pages as before.
   if (slug === "mri-fundamentals") {
