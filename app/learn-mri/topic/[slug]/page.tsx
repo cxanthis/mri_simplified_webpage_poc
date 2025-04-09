@@ -65,8 +65,10 @@ export async function generateMetadata({
 }: {
   params: { slug: string } | Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  // Await the params since Next.js may provide them as a promise.
+  // Await the params to ensure we have the resolved object.
   const resolvedParams = await params;
+  const { slug } = resolvedParams;
+
   const query = `*[slug.current == $slug][0]{ 
     title,
     seo {
@@ -96,7 +98,7 @@ export async function generateMetadata({
       }
     }
   }`;
-  const article = await client.fetch(query, { slug: resolvedParams.slug });
+  const article = await client.fetch(query, { slug });
   if (!article) {
     return {
       title: "Article Not Found",
