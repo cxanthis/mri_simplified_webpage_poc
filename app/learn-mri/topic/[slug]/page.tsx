@@ -63,11 +63,10 @@ const trimTitle = (title: string, maxLength: number = 25): string =>
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string } | Promise<{ slug: string }>;
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  // Await the params to ensure we have the resolved object.
-  const resolvedParams = await params;
-  const { slug } = resolvedParams;
+  // Await the params to ensure we have an object.
+  const { slug } = await params;
 
   const query = `*[slug.current == $slug][0]{ 
     title,
@@ -98,6 +97,7 @@ export async function generateMetadata({
       }
     }
   }`;
+
   const article = await client.fetch(query, { slug });
   if (!article) {
     return {
@@ -110,9 +110,7 @@ export async function generateMetadata({
     title: seo.seoTitle || article.title,
     description: seo.seoDescription || "",
     keywords: seo.seoKeywords,
-    alternates: {
-      canonical: seo.canonicalUrl,
-    },
+    alternates: { canonical: seo.canonicalUrl },
     robots: seo.metaRobots,
     openGraph: {
       title: seo.og?.ogTitle || seo.seoTitle || article.title,
