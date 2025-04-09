@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Head from "next/head";
+import { Metadata } from "next";
 import client from "../../../../sanityClient";
 import styles from "./page.module.css";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
@@ -51,9 +52,82 @@ interface Item {
 }
 
 // Helper function to trim article titles to a maximum number of characters.
-const trimTitle = (title: string, maxLength: number = 25): string => {
-  return title.length > maxLength ? title.substring(0, maxLength) + "..." : title;
-};
+const trimTitle = (title: string, maxLength: number = 25): string =>
+  title.length > maxLength ? title.substring(0, maxLength) + "..." : title;
+
+/**
+ * generateMetadata
+ * Fetches SEO metadata for the dynamic article from Sanity.
+ * Next.js will merge and override the defaults from app/layout.tsx.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<Metadata> {
+  const query = `*[slug.current == $slug][0]{
+    title,
+    seo {
+      seoTitle,
+      seoDescription,
+      seoKeywords,
+      canonicalUrl,
+      structuredData,
+      metaRobots,
+      og {
+        ogTitle,
+        ogDescription,
+        ogImage{
+          asset->{
+            url
+          }
+        }
+      },
+      twitter {
+        twitterTitle,
+        twitterDescription,
+        twitterImage{
+          asset->{
+            url
+          }
+        }
+      }
+    }
+  }`;
+  const article = await client.fetch(query, { slug: params.slug });
+  if (!article) {
+    return {
+      title: "Article Not Found",
+      description: "The requested article was not found.",
+    };
+  }
+  const seo = article.seo || {};
+
+  return {
+    title: seo.seoTitle || article.title,
+    description: seo.seoDescription || "",
+    keywords: seo.seoKeywords,
+    alternates: {
+      canonical: seo.canonicalUrl,
+    },
+    robots: seo.metaRobots,
+    openGraph: {
+      title: seo.og?.ogTitle || seo.seoTitle || article.title,
+      description: seo.og?.ogDescription || seo.seoDescription || "",
+      images: seo.og?.ogImage?.asset?.url
+        ? [{ url: seo.og.ogImage.asset.url }]
+        : undefined,
+    },
+    twitter: {
+      title: seo.twitter?.twitterTitle || seo.seoTitle || article.title,
+      description:
+        seo.twitter?.twitterDescription || seo.seoDescription || "",
+      images: seo.twitter?.twitterImage?.asset?.url
+        ? [{ url: seo.twitter.twitterImage.asset.url }]
+        : undefined,
+    },
+  };
+}
 
 export default async function ItemPage({
   params,
@@ -73,7 +147,7 @@ export default async function ItemPage({
             name="description"
             content="Learn the core principles, physics, and instrumentation behind MRI technology."
           />
-          {/* You can add additional meta tags for this static page as needed */}
+          {/* Add additional static meta tags for this page as needed */}
         </Head>
         <SidebarToggleLayout
           sidebar={<SanityArticlesMenuServer activeSlug={slug} />}
@@ -82,10 +156,10 @@ export default async function ItemPage({
               <h2 className={styles.title}>MRI Fundamentals</h2>
               <div className={styles.tile}>
                 <p>
-                  The MRI Fundamentals section is the cornerstone of this
-                  book, laying the groundwork for a thorough understanding of
-                  magnetic resonance imaging. Here, you will explore the core
-                  principles, physics, and instrumentation behind MRI technology.
+                  The MRI Fundamentals section is the cornerstone of this book,
+                  laying the groundwork for a thorough understanding of magnetic
+                  resonance imaging. Here, you will explore the core principles,
+                  physics, and instrumentation behind MRI technology.
                 </p>
                 <p>
                   This part of the book is distinct from the sections covering MRI
@@ -116,7 +190,7 @@ export default async function ItemPage({
             name="description"
             content="Discover detailed guidelines on patient preparation, imaging sequences, and protocols for accurate MRI diagnostics."
           />
-          {/* Additional meta tags if needed */}
+          {/* Additional static meta tags as needed */}
         </Head>
         <SidebarToggleLayout
           sidebar={<SanityArticlesMenuServer activeSlug={slug} />}
@@ -159,7 +233,7 @@ export default async function ItemPage({
             name="description"
             content="Explore protocols and best practices designed to maintain a secure MRI imaging environment."
           />
-          {/* Additional meta tags if needed */}
+          {/* Additional static meta tags as needed */}
         </Head>
         <SidebarToggleLayout
           sidebar={<SanityArticlesMenuServer activeSlug={slug} />}
@@ -247,7 +321,7 @@ export default async function ItemPage({
   // Extract SEO fields if available.
   const seo = item.seo;
 
-  // Render a fixed three-column navigation bar. Even if a reference is missing, an empty placeholder is used.
+  // Render the fixed three-column navigation.
   const articleNavigation = (
     <nav className={styles.articleNav}>
       <div className={styles.navItem}>
@@ -291,51 +365,13 @@ export default async function ItemPage({
 
   return (
     <>
-      {/* SEO Meta Tags */}
-      <Head>
-        <title>{seo?.seoTitle || item.title}</title>
-        {seo?.seoDescription && (
-          <meta name="description" content={seo.seoDescription} />
-        )}
-        {seo?.seoKeywords && (
-          <meta name="keywords" content={seo.seoKeywords} />
-        )}
-        {seo?.canonicalUrl && (
-          <link rel="canonical" href={seo.canonicalUrl} />
-        )}
-        {seo?.metaRobots && (
-          <meta name="robots" content={seo.metaRobots} />
-        )}
-        {seo?.structuredData && (
+      {/* For dynamic articles, metadata (including SEO fields) is now handled via generateMetadata.
+          The structuredData is output here if available. */}
+      {seo?.structuredData && (
+        <Head>
           <script type="application/ld+json">{seo.structuredData}</script>
-        )}
-        {/* Open Graph tags */}
-        {seo?.og?.ogTitle && (
-          <meta property="og:title" content={seo.og.ogTitle} />
-        )}
-        {seo?.og?.ogDescription && (
-          <meta property="og:description" content={seo.og.ogDescription} />
-        )}
-        {seo?.og?.ogImage?.asset?.url && (
-          <meta property="og:image" content={seo.og.ogImage.asset.url} />
-        )}
-        {/* Twitter Card tags */}
-        {seo?.twitter?.twitterTitle && (
-          <meta name="twitter:title" content={seo.twitter.twitterTitle} />
-        )}
-        {seo?.twitter?.twitterDescription && (
-          <meta
-            name="twitter:description"
-            content={seo.twitter.twitterDescription}
-          />
-        )}
-        {seo?.twitter?.twitterImage?.asset?.url && (
-          <meta
-            name="twitter:image"
-            content={seo.twitter.twitterImage.asset.url}
-          />
-        )}
-      </Head>
+        </Head>
+      )}
       <SidebarToggleLayout
         sidebar={<SanityArticlesMenuServer activeSlug={slug} />}
         main={
