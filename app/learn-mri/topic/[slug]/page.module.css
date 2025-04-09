@@ -1,70 +1,95 @@
 /* app/section/[content_id]/page.module.css */
 
 .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-    font-family: 'Inter', sans-serif; /* Make sure to import the font in your project */
-    background-color: #fff; /* Use a single background color */
-    color: #333;
-  }
-  
-  .title {
-    text-align: left;
-    font-size: 3rem;    
-    margin-top: 1rem;
-  }
-  
-  .tiles {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    margin-top: 2rem;
-  }
-  
-  .tile p {
-    font-size: 1.3rem;
-    line-height: 1.8;
-    margin-bottom: 1.5rem;
-  }
-  
-  .tile h2 {
-    font-size: 1.8rem;
-    line-height: 1.4;
-    margin-top: 1.5rem;
-    margin-bottom: 1rem;
-  }
-  
-  .tile h3 {
-    font-size: 1.5rem;
-    line-height: 1.4;
-    margin-top: 1.5rem;
-    margin-bottom: 0.75rem;
-  }
-  
-  .tile a {
-    color: #dc2626;
-    text-decoration: none;
-    transition: color 0.2s ease;
-  }
-  
-  .tile a:hover {
-    text-decoration: underline;
-  }
-  
-  .tile .imageCaption {
-    font-size: 1.2rem;
-    line-height: 1.4;
-    margin-top: 0.8rem;
-  }
-  
-  .tile .imageCaption a {
-    color: #dc2626;
-    text-decoration: none;
-    transition: color 0.2s ease;
-  }
-  
-  .tile .imageCaption a:hover {
-    text-decoration: underline;
-  }
-  
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Inter', sans-serif; /* Make sure to import the font in your project */
+  background-color: #fff; /* Use a single background color */
+  color: #333;
+}
+
+.title {
+  text-align: left;
+  font-size: 3rem;    
+  margin-top: 1rem;
+}
+
+.tiles {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.tile p {
+  font-size: 1.3rem;
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+}
+
+.tile h2 {
+  font-size: 1.8rem;
+  line-height: 1.4;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.tile h3 {
+  font-size: 1.5rem;
+  line-height: 1.4;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.tile a {
+  color: #dc2626;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.tile a:hover {
+  text-decoration: underline;
+}
+
+.tile .imageCaption {
+  font-size: 1.2rem;
+  line-height: 1.4;
+  margin-top: 0.8rem;
+}
+
+.tile .imageCaption a {
+  color: #dc2626;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.tile .imageCaption a:hover {
+  text-decoration: underline;
+}
+
+/* New styles for the article navigation bar */
+.articleNav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  margin-top: 2rem;
+  border-top: 1px solid #e2e2e2;
+}
+
+/* Ensures each navigation item occupies one-third of the available width */
+.navItem {
+  flex: 1;
+}
+
+.navLink {
+  font-size: 1.3rem;
+  color: #dc2626;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.navLink:hover {
+  text-decoration: underline;
+}
