@@ -1,4 +1,6 @@
 import { notFound } from 'next/navigation';
+import Head from 'next/head';
+import { Metadata } from 'next';
 import client from '../../../sanityClient';
 import styles from './page.module.css';
 import imageUrlBuilder from '@sanity/image-url';
@@ -26,7 +28,6 @@ interface ExternalLink {
 
 interface NewsTopic {
   title: string;
-  slug: { current: string };
   teaser: string;
   simplified?: string; // The one-minute summary field
   body: string; // HTML content
@@ -38,6 +39,32 @@ interface NewsTopic {
   };
   externalLinks?: ExternalLink[];
   images?: ImageItem[];
+  seo?: {
+    seoTitle?: string;
+    seoDescription?: string;
+    seoKeywords?: string;
+    canonicalUrl?: string;
+    structuredData?: string;
+    metaRobots?: string;
+    og?: {
+      ogTitle?: string;
+      ogDescription?: string;
+      ogImage?: {
+        asset?: {
+          url: string;
+        };
+      };
+    };
+    twitter?: {
+      twitterTitle?: string;
+      twitterDescription?: string;
+      twitterImage?: {
+        asset?: {
+          url: string;
+        };
+      };
+    };
+  };
 }
 
 // Map category values to their display titles.
@@ -52,6 +79,80 @@ const categoryMapping: Record<string, string> = {
   education: "Educational Resources & Training",
   experts: "Expert Opinions & Interviews",
 };
+
+// -----------------
+// SEO Metadata
+// -----------------
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const query = `*[_type == "news" && slug.current == $slug][0]{
+    title,
+    seo {
+      seoTitle,
+      seoDescription,
+      seoKeywords,
+      canonicalUrl,
+      structuredData,
+      metaRobots,
+      og {
+        ogTitle,
+        ogDescription,
+        ogImage{
+          asset->{
+            url
+          }
+        }
+      },
+      twitter {
+        twitterTitle,
+        twitterDescription,
+        twitterImage{
+          asset->{
+            url
+          }
+        }
+      }
+    }
+  }`;
+  const newsSEO = await client.fetch(query, { slug });
+  if (!newsSEO) {
+    return {
+      title: "News Not Found",
+      description: "The requested news article was not found.",
+    };
+  }
+  const seo = newsSEO.seo || {};
+  return {
+    title: seo.seoTitle || newsSEO.title,
+    description: seo.seoDescription || "",
+    keywords: seo.seoKeywords,
+    alternates: { canonical: seo.canonicalUrl },
+    robots: seo.metaRobots,
+    openGraph: {
+      title: seo.og?.ogTitle || seo.seoTitle || newsSEO.title,
+      description: seo.og?.ogDescription || seo.seoDescription || "",
+      images: seo.og?.ogImage?.asset?.url
+        ? [{ url: seo.og.ogImage.asset.url }]
+        : undefined,
+    },
+    twitter: {
+      title: seo.twitter?.twitterTitle || seo.seoTitle || newsSEO.title,
+      description: seo.twitter?.twitterDescription || seo.seoDescription || "",
+      images: seo.twitter?.twitterImage?.asset?.url
+        ? [{ url: seo.twitter.twitterImage.asset.url }]
+        : undefined,
+    },
+  };
+}
+
+// -----------------
+// Main Component
+// -----------------
 
 export default async function NewsPage({
   params,
@@ -84,6 +185,32 @@ export default async function NewsPage({
         caption
       },
       position
+    },
+    seo {
+      seoTitle,
+      seoDescription,
+      seoKeywords,
+      canonicalUrl,
+      structuredData,
+      metaRobots,
+      og {
+        ogTitle,
+        ogDescription,
+        ogImage{
+          asset->{
+            url
+          }
+        }
+      },
+      twitter {
+        twitterTitle,
+        twitterDescription,
+        twitterImage{
+          asset->{
+            url
+          }
+        }
+      }
     }
   }`;
 
@@ -132,64 +259,76 @@ export default async function NewsPage({
   }
 
   return (
-    <main className={styles.container}>
-      {/* Metadata: Category Title and Created At Date */}
-      {(categoryTitle || topic.createdAt) && (
-        <div className={styles.metaData}>
-          {categoryTitle && <span className={styles.category}>{categoryTitle}</span>}
-          {topic.createdAt && <span className={styles.date}>{formattedDate}</span>}
-        </div>
+    <>
+      {/* Inject JSON-LD structured data if provided */}
+      {topic.seo?.structuredData && (
+        <Head>
+          <script type="application/ld+json">{topic.seo.structuredData}</script>
+        </Head>
       )}
+      <main className={styles.container}>
+        {/* Metadata: Category Title and Created At Date */}
+        {(categoryTitle || topic.createdAt) && (
+          <div className={styles.metaData}>
+            {categoryTitle && <span className={styles.category}>{categoryTitle}</span>}
+            {topic.createdAt && <span className={styles.date}>{formattedDate}</span>}
+          </div>
+        )}
 
-      {/* Header Image */}
-      {topic.headerImage && topic.headerImage.asset && (
-        <div className={styles.headerImageWrapper}>
-          <img
-            src={urlFor(topic.headerImage).url()}
-            alt={topic.headerImage.alt || topic.title}
-            className={styles.headerImage}
-          />
+        {/* Header Image */}
+        {topic.headerImage && topic.headerImage.asset && (
+          <div className={styles.headerImageWrapper}>
+            <img
+              src={urlFor(topic.headerImage).url()}
+              alt={topic.headerImage.alt || topic.title}
+              className={styles.headerImage}
+            />
+          </div>
+        )}
+
+        <h1 className={styles.title}>{topic.title}</h1>
+        <div
+          className={styles.subtitle}
+          dangerouslySetInnerHTML={{ __html: topic.teaser }}
+        />
+
+        {/* Digest Callout Box */}
+        {topic.simplified && (
+          <div className={styles.digestBox}>
+            <h3 className={styles.digestTitle}>1-min digest</h3>
+            <div
+              className={styles.digestText}
+              dangerouslySetInnerHTML={{ __html: topic.simplified }}
+            />
+          </div>
+        )}
+        <hr className={styles.divider} />
+
+        <div className={styles.bodyWrapper}>
+          <div className={styles.body} dangerouslySetInnerHTML={{ __html: modifiedBody }} />
         </div>
-      )}
 
-      <h1 className={styles.title}>{topic.title}</h1>
-      <div
-        className={styles.subtitle}
-        dangerouslySetInnerHTML={{ __html: topic.teaser }}
-      />
-
-      {/* Digest Callout Box */}
-      {topic.simplified && (
-        <div className={styles.digestBox}>
-          <h3 className={styles.digestTitle}>1-min digest</h3>
-          <div
-            className={styles.digestText}
-            dangerouslySetInnerHTML={{ __html: topic.simplified }}
-          />
-        </div>
-      )}
-      <hr className={styles.divider} />
-
-      <div className={styles.bodyWrapper}>
-        <div className={styles.body} dangerouslySetInnerHTML={{ __html: modifiedBody }} />
-      </div>
-
-      {/* External Links Box */}
-      {topic.externalLinks && topic.externalLinks.length > 0 && (
-        <div className={styles.relatedArticlesSection}>
-          <h2 className={styles.relatedArticlesHeading}>Continue Reading</h2>
-          <ul>
-            {topic.externalLinks.map((link, index) => (
-              <li key={index} className={styles.relatedArticleItem}>
-                <a href={link.url} target="_blank" rel="noopener noreferrer" 
-                      className={styles.relatedArticleLink}>
-                  {link.title} 
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </main>
+        {/* External Links Box */}
+        {topic.externalLinks && topic.externalLinks.length > 0 && (
+          <div className={styles.relatedArticlesSection}>
+            <h2 className={styles.relatedArticlesHeading}>Continue Reading</h2>
+            <ul>
+              {topic.externalLinks.map((link, index) => (
+                <li key={index} className={styles.relatedArticleItem}>
+                  <a
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.relatedArticleLink}
+                  >
+                    {link.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </main>
+    </>
   );
 }
