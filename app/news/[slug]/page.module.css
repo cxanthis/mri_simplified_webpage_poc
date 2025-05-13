@@ -79,6 +79,36 @@
   text-decoration: underline;
 }
 
+.body ul,
+.body ol {
+  padding-left: 2rem;
+  margin-bottom: 1.5rem;
+  font-size: 1.3rem;
+  line-height: 1.8;
+}
+
+.body ul {
+  list-style-type: disc;
+}
+
+.body ol {
+  list-style-type: decimal;
+}
+
+.body ul ul,
+.body ol ol,
+.body ul ol,
+.body ol ul {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  padding-left: 1.5rem;
+  list-style-type: circle;
+}
+
+.body li {
+  margin-bottom: 0.5rem;
+}
+
 /* --- New Styles for the Digest Box --- */
 .digestBox {
   background-color: #e0e0e0;  /* A subtle light-blue background */
