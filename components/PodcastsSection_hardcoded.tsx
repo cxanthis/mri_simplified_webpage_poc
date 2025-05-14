@@ -48,8 +48,8 @@ export default function PodcastsSection() {
               <Image 
                 src={item.imageUrl} 
                 alt={item.title}
-                layout="fill"
-                objectFit="cover"
+                fill
+                style={{objectFit:'cover'}}
                 className="transition-transform duration-300 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
