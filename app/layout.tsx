@@ -31,9 +31,11 @@ export default function RootLayout({
   const showAnnouncement = false;
 
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+    <html lang="en">
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <ClerkProvider>
+      
+        
           {/* ✅ Load Intercom and userflow after Clerk user context is available 
           <IntercomProvider />
           <UserflowProvider />*/}
@@ -50,10 +52,12 @@ export default function RootLayout({
           <main className="container mx-auto px-4 md:px-6 min-h-screen">
             {children}
           </main>
-          <ChatboxWrapper /> {/* 👈 Show only if Clerk user is signed in */}
+          <ChatboxWrapper />
           <Footer />
-        </body>
-      </html>
-    </ClerkProvider>
+        
+      
+        </ClerkProvider>
+      </body>
+    </html>
   );
 }
