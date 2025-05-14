@@ -4,10 +4,12 @@ import { useState, useEffect } from 'react';
 import {
   ArrowsPointingOutIcon,
   ArrowsPointingInIcon
-} from '@heroicons/react/24/outline'
+} from '@heroicons/react/24/outline';
 
-
-interface Message { role: 'user' | 'assistant'; content: string; }
+interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+}
 
 export default function Chatbox() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -16,22 +18,24 @@ export default function Chatbox() {
   const [error, setError] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [isMaximized, setIsMaximized] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(true);
 
   const handleToggleOpen = () => {
     if (expanded) {
       setIsMaximized(false);
     }
-    setExpanded((prev) => !prev);
+    setExpanded(prev => !prev);
+    if (!expanded) setShowTooltip(false);
   };
 
-  const handleToggleSize = () => setIsMaximized((prev) => !prev);
+  const handleToggleSize = () => setIsMaximized(prev => !prev);
 
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
     setError(false);
     const userMsg: Message = { role: 'user', content: input };
-    setMessages((prev) => [...prev, userMsg]);
+    setMessages(prev => [...prev, userMsg]);
     setLoading(true);
 
     try {
@@ -40,10 +44,9 @@ export default function Chatbox() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: [...messages, userMsg] }),
       });
-
       if (!res.ok) throw new Error('Network response was not ok');
       const data: Message[] = await res.json();
-      setMessages((prev) => [...prev, ...data]);
+      setMessages(prev => [...prev, ...data]);
     } catch (err) {
       console.error('Chat error', err);
       setError(true);
@@ -53,7 +56,7 @@ export default function Chatbox() {
     }
   };
 
-  // Auto-scroll to bottom on new message
+  // Auto‑scroll to bottom on new message
   useEffect(() => {
     const container = document.getElementById('chat-messages');
     if (container) {
@@ -61,7 +64,7 @@ export default function Chatbox() {
     }
   }, [messages, loading]);
 
-  // Determine container size classes
+  // Size classes: default 50% taller and 20% wider; expanded stays the same
   const sizeClasses = expanded
     ? isMaximized
       ? 'w-[640px] h-[768px]'
@@ -74,30 +77,58 @@ export default function Chatbox() {
         {expanded ? (
           <div className="flex flex-col h-full bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
             <div className="flex items-center justify-between bg-gray-100 p-3 border-b border-gray-200">
-              <h2 className="text-lg font-semibold">💬 Chat with Dr. Bloch</h2>
+              <h2 className="text-xl font-semibold">💬 Chat with Dr. Bloch</h2>
               <div className="flex items-center space-x-2">
                 {/* Size toggle */}
-                <button onClick={handleToggleSize} aria-label={isMaximized ? 'Restore size' : 'Double size'}>
-                  {isMaximized 
-                  ? <ArrowsPointingInIcon className="h-5 w-5 text-gray-600 hover:text-gray-800" /> 
-                  : <ArrowsPointingOutIcon className="h-5 w-5 text-gray-600 hover:text-gray-800" />}
+                <button
+                  onClick={handleToggleSize}
+                  aria-label={isMaximized ? 'Restore size' : 'Maximize'}
+                >
+                  {isMaximized ? (
+                    <ArrowsPointingInIcon className="h-5 w-5 text-gray-600 hover:text-gray-800" />
+                  ) : (
+                    <ArrowsPointingOutIcon className="h-5 w-5 text-gray-600 hover:text-gray-800" />
+                  )}
                 </button>
                 {/* Minimize icon */}
                 <button onClick={handleToggleOpen} aria-label="Minimize chat">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600 hover:text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 12H6" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6 text-gray-600 hover:text-gray-800"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M18 12H6"
+                    />
                   </svg>
                 </button>
               </div>
             </div>
 
-            <div id="chat-messages" className="flex-1 p-4 space-y-3 overflow-y-auto bg-gray-50">
+            <div
+              id="chat-messages"
+              className="flex-1 p-4 space-y-3 overflow-y-auto bg-gray-50"
+            >
               {messages.map((m, i) => (
-                <div key={i} className={`flex ${m.role === 'assistant' ? 'justify-start' : 'justify-end'}`}>                  
-                  <div className={`${m.role === 'assistant' ? 'bg-white' : 'bg-blue-600 text-white'} rounded-lg p-3 max-w-[75%] shadow`}>                    
-                    <p className="text-base whitespace-pre-wrap">
-                      {m.content}
-                    </p>
+                <div
+                  key={i}
+                  className={`flex ${
+                    m.role === 'assistant' ? 'justify-start' : 'justify-end'
+                  }`}
+                >                  
+                  <div
+                    className={`${
+                      m.role === 'assistant'
+                        ? 'bg-white text-gray-900'
+                        : 'bg-blue-600 text-white'
+                    } rounded-lg p-3 max-w-[75%] shadow`}
+                  >                    
+                    <p className="text-base whitespace-pre-wrap">{m.content}</p>
                   </div>
                 </div>
               ))}
@@ -107,45 +138,73 @@ export default function Chatbox() {
                   <div className="bg-white rounded-lg p-3 max-w-[75%] shadow flex items-center">
                     <span className="text-base text-gray-500 mr-2">Thinking</span>
                     <span className="flex space-x-1">
-                      <span className="dot animate-pulse delay-0"></span>
-                      <span className="dot animate-pulse delay-200"></span>
-                      <span className="dot animate-pulse delay-400"></span>
+                      <span className="dot animate-pulse delay-0" />
+                      <span className="dot animate-pulse delay-200" />
+                      <span className="dot animate-pulse delay-400" />
                     </span>
                   </div>
                 </div>
               )}
             </div>
 
-            <form onSubmit={sendMessage} className="p-3 border-t border-gray-200 bg-white flex gap-2">
+            <form
+              onSubmit={sendMessage}
+              className="p-3 border-t border-gray-200 bg-white flex gap-2"
+            >
               <input
                 type="text"
-                className="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="flex-1 border border-gray-300 rounded-full px-4 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-400"
                 placeholder="Ask something..."
                 value={input}
-                onChange={(e) => setInput(e.target.value)}
+                onChange={e => setInput(e.target.value)}
                 disabled={loading}
               />
               <button
                 type="submit"
                 disabled={loading || !input.trim()}
-                className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-4 py-2 disabled:opacity-50"
+                className="bg-blue-600 hover:bg-blue-700 text-white text-base rounded-full px-4 py-2 disabled:opacity-50"
               >
                 Send
               </button>
             </form>
 
-            {error && <p className="text-red-500 text-center p-2">Something went wrong. Please try again.</p>}
+            {error && (
+              <p className="text-red-500 text-center p-2">
+                Something went wrong. Please try again.
+              </p>
+            )}
           </div>
         ) : (
-          <button
-            onClick={handleToggleOpen}
-            aria-label="Open chat"
-            className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8s-9-3.582-9-8 4.03-8 9-8 9 3.582 9 8z" />
-            </svg>
-          </button>
+          <div className="relative flex items-center">
+            {showTooltip && (
+              <div className="absolute bottom-full right-1 mb-4 w-48 bg-white text-gray-900 text-base rounded-2xl p-2 shadow-2xl border border-gray-200">
+                Chat with Dr. Bloch about any topic covered in MRI Simplified 
+                <div
+                  className="absolute top-full right-4 w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-white border-t-gray-800"
+                />
+              </div>
+            )}
+            <button
+              onClick={handleToggleOpen}
+              aria-label="Open chat"
+              className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8s-9-3.582-9-8 4.03-8 9-8 9 3.582 9 8z"
+                />
+              </svg>
+            </button>
+          </div>
         )}
       </div>
 
