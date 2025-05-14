@@ -57,8 +57,8 @@ export default async function NewsSection() {
                 <Image
                   src={urlFor(item.headerImage).width(800).url()}
                   alt={item.headerImage.alt || item.title}
-                  layout="fill"
-                  objectFit="cover"
+                  fill
+                  style={{objectFit:'cover'}}
                   className="transition-transform duration-300 group-hover:scale-105"
                 />
               )}

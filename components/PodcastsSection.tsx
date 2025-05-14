@@ -59,8 +59,8 @@ export default async function PodcastsSection() {
                 <Image 
                   src={urlFor(item.coverImage).width(800).url()} 
                   alt={item.coverImage.alt || item.title}
-                  layout="fill"
-                  objectFit="cover"
+                  fill
+                  style={{objectFit:'cover'}}
                   className="transition-transform duration-300 group-hover:scale-105"
                 />
               )}
