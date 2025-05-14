@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import {
-  ClerkProvider
-} from '@clerk/nextjs'
+import { ClerkProvider } from "@clerk/nextjs";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Footer from "@/components/Footer"; 
+import Footer from "@/components/Footer";
 import Navbar from "../components/Navbar";
+import UserflowProvider from "@/components/UserflowProvider";
+import IntercomProvider from "@/components/IntercomProvider";
+import ChatboxWrapper from '@/components/ChatboxWrapper';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,17 +28,17 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
-  // Toggle this flag to enable/disable the ribbon
-  const showAnnouncement = false; // Change to false to hide the ribbon
+  const showAnnouncement = false;
 
   return (
     <ClerkProvider>
       <html lang="en">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+          {/* ✅ Load Intercom and userflow after Clerk user context is available 
+          <IntercomProvider />
+          <UserflowProvider />*/}
           <Navbar />
-          {/* Container for alignment */}
+
           {showAnnouncement && (
             <div className="w-full flex justify-center mt-6">
               <div className="w-full max-w-screen-lg px-2 sm:px-6 lg:px-12 bg-black text-white text-center py-2 mb-0 animate-flash">
@@ -45,7 +46,11 @@ export default function RootLayout({
               </div>
             </div>
           )}
-          <main className="container mx-auto px-4 md:px-6 min-h-screen">{children}</main>
+
+          <main className="container mx-auto px-4 md:px-6 min-h-screen">
+            {children}
+          </main>
+          <ChatboxWrapper /> {/* 👈 Show only if Clerk user is signed in */}
           <Footer />
         </body>
       </html>
