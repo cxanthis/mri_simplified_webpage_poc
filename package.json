@@ -13,6 +13,7 @@
     "@ai-sdk/react": "^1.2.12",
     "@clerk/nextjs": "^6.12.4",
     "@google/generative-ai": "^0.24.1",
+    "@heroicons/react": "^2.2.0",
     "@intercom/messenger-js-sdk": "^0.0.14",
     "@sanity/client": "^6.28.3",
     "@sanity/image-url": "^1.1.0",

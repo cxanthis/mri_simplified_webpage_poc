@@ -1,21 +1,37 @@
-// components/Chatbox.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import {
+  ArrowsPointingOutIcon,
+  ArrowsPointingInIcon
+} from '@heroicons/react/24/outline'
 
-type Message = { role: 'user' | 'assistant'; content: string };
+
+interface Message { role: 'user' | 'assistant'; content: string; }
 
 export default function Chatbox() {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput]       = useState('');
-  const [loading, setLoading]   = useState(false);
-  const [error, setError]       = useState(false);
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [isMaximized, setIsMaximized] = useState(false);
+
+  const handleToggleOpen = () => {
+    if (expanded) {
+      setIsMaximized(false);
+    }
+    setExpanded((prev) => !prev);
+  };
+
+  const handleToggleSize = () => setIsMaximized((prev) => !prev);
 
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!input.trim()) return;
     setError(false);
     const userMsg: Message = { role: 'user', content: input };
-    setMessages(prev => [...prev, userMsg]);
+    setMessages((prev) => [...prev, userMsg]);
     setLoading(true);
 
     try {
@@ -25,11 +41,11 @@ export default function Chatbox() {
         body: JSON.stringify({ messages: [...messages, userMsg] }),
       });
 
-      if (!res.ok) throw new Error();
+      if (!res.ok) throw new Error('Network response was not ok');
       const data: Message[] = await res.json();
-      setMessages(prev => [...prev, ...data]);
-    } catch {
-      console.error('Chat error');
+      setMessages((prev) => [...prev, ...data]);
+    } catch (err) {
+      console.error('Chat error', err);
       setError(true);
     } finally {
       setLoading(false);
@@ -37,37 +53,122 @@ export default function Chatbox() {
     }
   };
 
-  return (
-    <div className="max-w-2xl mx-auto p-4 bg-white rounded-xl shadow">
-      <h2 className="text-xl font-semibold mb-4">💬 Ask about our content</h2>
+  // Auto-scroll to bottom on new message
+  useEffect(() => {
+    const container = document.getElementById('chat-messages');
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+    }
+  }, [messages, loading]);
 
-      <div className="space-y-2 mb-4 max-h-[400px] overflow-y-auto border p-4 rounded bg-gray-50">
-        {messages.map((m, i) => (
-          <p key={i} className="whitespace-pre-wrap">
-            <strong>{m.role === 'user' ? 'You' : 'Dr. Bloch'}:</strong> {m.content}
-          </p>
-        ))}
-        {loading && <p><em>Thinking…</em></p>}
+  // Determine container size classes
+  const sizeClasses = expanded
+    ? isMaximized
+      ? 'w-[640px] h-[768px]'
+      : 'w-[384px] h-[576px]'
+    : '';
+
+  return (
+    <div className="fixed bottom-6 right-6 z-50">
+      <div className={`transition-all duration-300 ${sizeClasses}`}>        
+        {expanded ? (
+          <div className="flex flex-col h-full bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+            <div className="flex items-center justify-between bg-gray-100 p-3 border-b border-gray-200">
+              <h2 className="text-lg font-semibold">💬 Chat with Dr. Bloch</h2>
+              <div className="flex items-center space-x-2">
+                {/* Size toggle */}
+                <button onClick={handleToggleSize} aria-label={isMaximized ? 'Restore size' : 'Double size'}>
+                  {isMaximized 
+                  ? <ArrowsPointingInIcon className="h-5 w-5 text-gray-600 hover:text-gray-800" /> 
+                  : <ArrowsPointingOutIcon className="h-5 w-5 text-gray-600 hover:text-gray-800" />}
+                </button>
+                {/* Minimize icon */}
+                <button onClick={handleToggleOpen} aria-label="Minimize chat">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600 hover:text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 12H6" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div id="chat-messages" className="flex-1 p-4 space-y-3 overflow-y-auto bg-gray-50">
+              {messages.map((m, i) => (
+                <div key={i} className={`flex ${m.role === 'assistant' ? 'justify-start' : 'justify-end'}`}>                  
+                  <div className={`${m.role === 'assistant' ? 'bg-white' : 'bg-blue-600 text-white'} rounded-lg p-3 max-w-[75%] shadow`}>                    
+                    <p className="text-base whitespace-pre-wrap">
+                      {m.content}
+                    </p>
+                  </div>
+                </div>
+              ))}
+
+              {loading && (
+                <div className="flex justify-start">
+                  <div className="bg-white rounded-lg p-3 max-w-[75%] shadow flex items-center">
+                    <span className="text-base text-gray-500 mr-2">Thinking</span>
+                    <span className="flex space-x-1">
+                      <span className="dot animate-pulse delay-0"></span>
+                      <span className="dot animate-pulse delay-200"></span>
+                      <span className="dot animate-pulse delay-400"></span>
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <form onSubmit={sendMessage} className="p-3 border-t border-gray-200 bg-white flex gap-2">
+              <input
+                type="text"
+                className="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                placeholder="Ask something..."
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                disabled={loading}
+              />
+              <button
+                type="submit"
+                disabled={loading || !input.trim()}
+                className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-4 py-2 disabled:opacity-50"
+              >
+                Send
+              </button>
+            </form>
+
+            {error && <p className="text-red-500 text-center p-2">Something went wrong. Please try again.</p>}
+          </div>
+        ) : (
+          <button
+            onClick={handleToggleOpen}
+            aria-label="Open chat"
+            className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8s-9-3.582-9-8 4.03-8 9-8 9 3.582 9 8z" />
+            </svg>
+          </button>
+        )}
       </div>
 
-      <form onSubmit={sendMessage} className="flex gap-2">
-        <input
-          className="flex-1 border rounded p-2"
-          placeholder="Ask something..."
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          disabled={loading}
-        />
-        <button
-          type="submit"
-          disabled={loading || input.trim() === ''}
-          className="bg-black text-white px-4 py-2 rounded disabled:opacity-50"
-        >
-          Send
-        </button>
-      </form>
+      <style jsx>{`
+        .dot {
+          display: inline-block;
+          width: 6px;
+          height: 6px;
+          background-color: #4b5563; /* gray-600 */
+          border-radius: 9999px;
+        }
+        .animate-pulse {
+          animation: pulse 1s infinite;
+        }
+        .delay-0 { animation-delay: 0s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-400 { animation-delay: 0.4s; }
 
-      {error && <p className="text-red-500 mt-2">Something went wrong.</p>}
+        @keyframes pulse {
+          0%, 80%, 100% { opacity: 0.3; transform: scale(1); }
+          40% { opacity: 1; transform: scale(1.3); }
+        }
+      `}</style>
     </div>
   );
 }
