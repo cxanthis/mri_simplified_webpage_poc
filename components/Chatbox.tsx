@@ -7,6 +7,7 @@ import {
   ArrowsPointingOutIcon,
   ArrowsPointingInIcon
 } from '@heroicons/react/24/outline';
+import ReactMarkdown from 'react-markdown';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -123,7 +124,9 @@ export default function Chatbox() {
                       m.role === 'assistant' ? 'bg-white text-gray-900' : 'bg-blue-600 text-white'
                     } rounded-lg p-3 max-w-[75%] shadow`}
                   >
-                    <p className="text-base whitespace-pre-wrap">{m.content}</p>
+                  <div className="prose prose-sm max-w-none">
+                  <ReactMarkdown>{m.content}</ReactMarkdown>
+                  </div>
                   </div>
                 </div>
               ))}
