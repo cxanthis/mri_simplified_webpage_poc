@@ -70,7 +70,7 @@ export default function Chatbox() {
   const sizeClasses = expanded
     ? isMaximized
       ? 'w-[640px] h-[768px]'
-      : 'w-[384px] h-[576px]'
+      : 'w-[384px] h-[606px]'
     : '';
 
   return (
@@ -145,6 +145,10 @@ export default function Chatbox() {
               )}
             </div>
 
+            {/* Disclaimer */}
+            <div className="text-xs text-gray-500 text-center px-4 py-2 border-t border-gray-200 bg-gray-50">
+              ⚠️ Dr. Bloch is a virtual expert on MRI topics. While he aims to be accurate and helpful, mistakes are possible. Always double-check important details with a qualified human expert.
+            </div>
             {/* Input */}
             <form onSubmit={sendMessage} className="p-3 border-t border-gray-200 bg-white flex gap-2">
               <input
