@@ -8,6 +8,8 @@ import {
   ArrowsPointingInIcon
 } from '@heroicons/react/24/outline';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -15,14 +17,13 @@ interface Message {
 }
 
 export default function Chatbox() {
-  // ← Clerk hook now at top level
   const { isSignedIn } = useUser();
 
-  const [messages, setMessages]     = useState<Message[]>([]);
-  const [input, setInput]           = useState('');
-  const [loading, setLoading]       = useState(false);
-  const [error, setError]           = useState(false);
-  const [expanded, setExpanded]     = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const [isMaximized, setIsMaximized] = useState(false);
   const [showTooltip, setShowTooltip] = useState(true);
 
@@ -60,13 +61,11 @@ export default function Chatbox() {
     }
   };
 
-  // Auto-scroll to bottom on new message
   useEffect(() => {
     const container = document.getElementById('chat-messages');
     if (container) container.scrollTop = container.scrollHeight;
   }, [messages, loading]);
 
-  // Size classes: default 50% taller & 20% wider; expanded unchanged
   const sizeClasses = expanded
     ? isMaximized
       ? 'w-[640px] h-[768px]'
@@ -78,11 +77,10 @@ export default function Chatbox() {
       <div className={`transition-all duration-300 ${sizeClasses}`}>
         {expanded ? (
           <div className="relative flex flex-col h-full bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
-            {/* ONLY REGISTERED USERS CAN CHAT */}
             {!isSignedIn && (
               <div className="absolute top-12 inset-x-0 bottom-0 bg-white/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 rounded-2xl">
                 <div className="text-center text-gray-800">
-                  Please <b>register or login</b> <br/> to chat for free
+                  Please <b>register or login</b> <br /> to chat for free
                 </div>
               </div>
             )}
@@ -117,19 +115,41 @@ export default function Chatbox() {
 
             {/* Messages */}
             <div id="chat-messages" className="flex-1 p-4 space-y-3 overflow-y-auto bg-gray-50">
-              {messages.map((m, i) => (
-                <div key={i} className={`flex ${m.role === 'assistant' ? 'justify-start' : 'justify-end'}`}>
-                  <div
-                    className={`${
-                      m.role === 'assistant' ? 'bg-white text-gray-900' : 'bg-blue-600 text-white'
-                    } rounded-lg p-3 max-w-[75%] shadow`}
-                  >
-                  <div className="prose prose-sm max-w-none">
-                  <ReactMarkdown>{m.content}</ReactMarkdown>
+              {messages.map((m, i) => {
+                const cleanedContent =
+                  m.role === 'assistant'
+                    ? m.content
+                        .replace(/Sources:\s+•\s/g, '<br/><br/>\n\n**Sources:**\n- ')
+                        .replace(/\s•\s/g, '\n- ')
+                    : m.content;
+
+                return (
+                  <div key={i} className={`flex ${m.role === 'assistant' ? 'justify-start' : 'justify-end'}`}>
+                    <div
+                      className={`${
+                        m.role === 'assistant' ? 'bg-white text-gray-900' : 'bg-blue-600 text-white'
+                      } rounded-lg p-3 max-w-[75%] shadow`}
+                    >
+                      <div className="prose prose-sm max-w-none prose-p:mb-3 prose-li:mb-1 prose-ul:pl-5 prose-ol:pl-5">
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          rehypePlugins={[rehypeRaw]}
+                          components={{
+                            hr: () => null,
+                            p: ({ node, children, ...props }) => (
+                              <p className="mb-4 last:mb-0" {...props}>
+                                {children}
+                              </p>
+                            ),
+                          }}
+                        >
+                          {cleanedContent}
+                        </ReactMarkdown>
+                      </div>
+                    </div>
                   </div>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
 
               {loading && (
                 <div className="flex justify-start">
@@ -149,6 +169,7 @@ export default function Chatbox() {
             <div className="text-xs text-gray-500 text-center px-4 py-2 border-t border-gray-200 bg-gray-50">
               ⚠️ Dr. Bloch is a virtual expert on MRI topics. While he aims to be accurate and helpful, mistakes are possible. Always double-check important details with a qualified human expert.
             </div>
+
             {/* Input */}
             <form onSubmit={sendMessage} className="p-3 border-t border-gray-200 bg-white flex gap-2">
               <input
@@ -200,7 +221,7 @@ export default function Chatbox() {
           display: inline-block;
           width: 6px;
           height: 6px;
-          background-color: #4b5563; /* gray-600 */
+          background-color: #4b5563;
           border-radius: 9999px;
         }
         .animate-pulse {
@@ -217,9 +238,7 @@ export default function Chatbox() {
         }
 
         @keyframes pulse {
-          0%,
-          80%,
-          100% {
+          0%, 80%, 100% {
             opacity: 0.3;
             transform: scale(1);
           }
