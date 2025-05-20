@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation';
-import Head from 'next/head';
 import { Metadata } from 'next';
 import client from '../../../sanityClient';
 import styles from './page.module.css';
@@ -263,31 +262,6 @@ export default async function NewsPage({
   const categoryTitle = topic.category
     ? categoryMapping[topic.category] || topic.category
     : '';
-
-  // Modify the body to insert images before <p> elements based on their position
-  let modifiedBody = topic.body;
-  if (topic.images && topic.images.length > 0) {
-    // Sort images by their position value (ascending)
-    const sortedImages = [...topic.images].sort((a, b) => a.position - b.position);
-    let pCounter = 0;
-    modifiedBody = modifiedBody.replace(/<p([^>]*)>/g, (match) => {
-      pCounter++;
-      let insertedHtml = '';
-      // Insert every image whose position equals the current paragraph count
-      while (sortedImages.length && sortedImages[0].position === pCounter) {
-        const imgItem = sortedImages.shift();
-        insertedHtml += `<div class="${styles.imageWrapper}">
-          <img src="${urlFor(imgItem!.image).width(800).url()}" alt="${topic.title}" class="${styles.image}" />
-          ${
-            imgItem!.image.caption
-              ? `<p class="${styles.imageCaption}">${imgItem!.image.caption}</p>`
-              : ''
-          }
-        </div>`;
-      }
-      return insertedHtml + match;
-    });
-  }
 
   return (
     <>
