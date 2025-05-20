@@ -136,7 +136,7 @@ export default function Chatbox() {
                           rehypePlugins={[rehypeRaw]}
                           components={{
                             hr: () => null,
-                            p: ({ node, children, ...props }) => (
+                            p: ({ children, ...props }) => (
                               <p className="mb-4 last:mb-0" {...props}>
                                 {children}
                               </p>

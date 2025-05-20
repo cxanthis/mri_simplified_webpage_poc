@@ -4,8 +4,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Footer from "@/components/Footer";
 import Navbar from "../components/Navbar";
-import UserflowProvider from "@/components/UserflowProvider";
-import IntercomProvider from "@/components/IntercomProvider";
+// import UserflowProvider from "@/components/UserflowProvider";
+// import IntercomProvider from "@/components/IntercomProvider";
 import ChatboxWrapper from '@/components/ChatboxWrapper';
 
 const geistSans = Geist({

@@ -4,6 +4,7 @@ import { Metadata } from 'next';
 import client from '../../../sanityClient';
 import styles from './page.module.css';
 import imageUrlBuilder from '@sanity/image-url';
+import Image from 'next/image';
 
 // Create a URL builder using your Sanity client
 const builder = imageUrlBuilder(client);
@@ -13,9 +14,21 @@ function urlFor(source: SanityImageSource) {
   return builder.image(source);
 }
 
+// Extend the asset type to include metadata and url
+interface SanityImageAsset {
+  _id: string;
+  url: string;
+  metadata: {
+    dimensions: {
+      width: number;
+      height: number;
+    };
+  };
+}
+
 interface ImageItem {
   image: {
-    asset: SanityImageSource;
+    asset: SanityImageAsset;
     caption?: string;
   };
   position: number;
@@ -172,7 +185,16 @@ export default async function NewsPage({
     category,
     createdAt,
     headerImage{
-      asset->,
+      asset->{
+        _id,
+        url,
+        metadata {
+          dimensions {
+            width,
+            height
+          }
+        }
+      },
       alt
     },
     externalLinks[]{
@@ -181,7 +203,16 @@ export default async function NewsPage({
     },
     images[]{
       image{
-        asset->,
+        asset->{
+          _id,
+          url,
+          metadata {
+            dimensions {
+              width,
+              height
+            }
+          }
+        },
         caption
       },
       position
@@ -260,12 +291,14 @@ export default async function NewsPage({
 
   return (
     <>
-      {/* Inject JSON-LD structured data if provided */}
+      {/* Inject JSON-LD structured data */}
       {topic.seo?.structuredData && (
-        <Head>
-          <script type="application/ld+json">{topic.seo.structuredData}</script>
-        </Head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: topic.seo.structuredData }}
+        />
       )}
+
       <main className={styles.container}>
         {/* Metadata: Category Title and Created At Date */}
         {(categoryTitle || topic.createdAt) && (
@@ -276,12 +309,15 @@ export default async function NewsPage({
         )}
 
         {/* Header Image */}
-        {topic.headerImage && topic.headerImage.asset && (
+        {topic.headerImage?.asset && (
           <div className={styles.headerImageWrapper}>
-            <img
+            <Image
               src={urlFor(topic.headerImage).url()}
               alt={topic.headerImage.alt || topic.title}
+              width={1200}
+              height={628}
               className={styles.headerImage}
+              priority
             />
           </div>
         )}
@@ -305,7 +341,31 @@ export default async function NewsPage({
         <hr className={styles.divider} />
 
         <div className={styles.bodyWrapper}>
-          <div className={styles.body} dangerouslySetInnerHTML={{ __html: modifiedBody }} />
+          <div className={styles.body}>
+            <div dangerouslySetInnerHTML={{ __html: topic.body }} />
+            {topic.images
+              ?.sort((a, b) => a.position - b.position)
+              .map((imgItem, i) => (
+                <div key={i} className={styles.imageWrapper}>
+                  <Image
+                    src={urlFor(imgItem.image).width(800).url()}
+                    alt={topic.title}
+                    width={800}
+                    height={Math.floor(
+                      (imgItem.image.asset.metadata.dimensions.height /
+                        imgItem.image.asset.metadata.dimensions.width) *
+                        800
+                    )}
+                    className={styles.image}
+                    placeholder="blur"
+                    blurDataURL={urlFor(imgItem.image).width(20).url()}
+                  />
+                  {imgItem.image.caption && (
+                    <p className={styles.imageCaption}>{imgItem.image.caption}</p>
+                  )}
+                </div>
+              ))}
+          </div>
         </div>
 
         {/* External Links Box */}

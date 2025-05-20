@@ -1,7 +1,7 @@
 // app/api/chat/route.ts
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { embedText }           from '@/utils/embedding';
-import { getRelevantChunks, ScoredChunk } from '@/utils/vectorSearch';
+import { getRelevantChunks} from '@/utils/vectorSearch';
 
 type ChatMessage = {
   role: 'user' | 'assistant';
