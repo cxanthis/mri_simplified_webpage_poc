@@ -114,13 +114,18 @@ export default async function SanityArticlesMenuServer({ activeSlug }: MenuProps
     <nav className="w-full border-gray-200 border bg-white">
       <div className="flex items-center justify-between px-4 py-3 border-gray-200 border-b">
         <h2 className="text-[1.3rem] font-bold">Learn MRI</h2>
-        {progressPercentage !== null && (
+        {userId && progressPercentage !== null && (
           <span className="text-sm text-gray-600">{progressPercentage}% completed</span>
         )}
       </div>
 
       <ul className="flex flex-col">
-        <InteractiveMenu tree={tree} activeArticle={activeArticle} activeSlug={activeSlug} />
+        <InteractiveMenu
+          tree={tree}
+          activeArticle={activeArticle}
+          activeSlug={activeSlug}
+          completedSlugs={userId ? Array.from(completedSlugs) : []}
+        />
       </ul>
     </nav>
   )

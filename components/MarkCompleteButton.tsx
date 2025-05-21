@@ -1,22 +1,48 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useUser } from '@clerk/nextjs'
 
 export default function MarkCompleteButton({ slug }: { slug: string }) {
+  const { user } = useUser()
   const [completed, setCompleted] = useState(false)
-  const [dbAvailable, setDbAvailable] = useState<boolean | null>(null)
+  const [ready, setReady] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
-    const checkAvailability = async () => {
+    if (!user) return
+
+    let active = true
+
+    const checkStatus = async () => {
       try {
-        const res = await fetch('/api/progress/available', { method: 'GET' })
-        setDbAvailable(res.status === 200)
+        const controller = new AbortController()
+        const timeout = setTimeout(() => controller.abort(), 3000)
+
+        const res = await fetch(`/api/progress/status?slug=${slug}`, {
+          method: 'GET',
+          signal: controller.signal,
+        })
+
+        clearTimeout(timeout)
+
+        if (active && res.ok) {
+          const data = await res.json()
+          setCompleted(data.completed)
+        }
       } catch {
-        setDbAvailable(false)
+        // ignore
+      } finally {
+        if (active) setReady(true)
       }
     }
-    checkAvailability()
-  }, [])
+
+    checkStatus()
+    return () => {
+      active = false
+    }
+  }, [slug, user])
 
   const handleClick = async () => {
     const res = await fetch('/api/progress/complete', {
@@ -25,21 +51,22 @@ export default function MarkCompleteButton({ slug }: { slug: string }) {
       body: JSON.stringify({ slug }),
     })
 
-    if (res.ok) setCompleted(true)
+    if (res.ok) {
+      setCompleted(true)
+      router.refresh()
+    }
   }
 
-  if (dbAvailable === false) return null
+  if (!user || !ready) return null
 
   return completed ? (
     <p className="mt-6 text-green-600 font-medium">Marked as completed</p>
   ) : (
-    dbAvailable && (
-      <button
-        onClick={handleClick}
-        className="mt-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-      >
-        Mark as Completed
-      </button>
-    )
+    <button
+      onClick={handleClick}
+      className="mt-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+    >
+      Mark as Completed
+    </button>
   )
 }
