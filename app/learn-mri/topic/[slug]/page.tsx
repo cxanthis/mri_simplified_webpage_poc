@@ -7,6 +7,7 @@ import { SignedIn, SignedOut } from "@clerk/nextjs";
 import SanityArticlesMenuServer from "../../../../components/SanityArticlesMenuServer";
 import SidebarToggleLayout from "../../../../components/SidebarToggleLayout";
 import Link from "next/link";
+import MarkCompleteButton from '@/components/MarkCompleteButton'
 
 interface SEO {
   seoTitle?: string;
@@ -385,18 +386,22 @@ export default async function ItemPage({
               <div dangerouslySetInnerHTML={{ __html: item.advanced }} />
             </div>
             <div className={styles.tile}>
-              <h2>Clinical Relevance</h2>
-              <SignedIn>
-                <div dangerouslySetInnerHTML={{ __html: item.clinical }} />
-              </SignedIn>
-              <SignedOut>
-                <p>
-                  This section is available for free to registered users. Sign up
-                  using the options that appear at the top of this page.
-                </p>
-              </SignedOut>
-            </div>
+            <h2>Clinical Relevance</h2>
+            <SignedIn>
+              <div dangerouslySetInnerHTML={{ __html: item.clinical }} />
+            </SignedIn>
+            <SignedOut>
+              <p>
+                This section is available for free to registered users. Sign up
+                using the options that appear at the top of this page.
+              </p>
+            </SignedOut>
+          </div>
+
+          <div className={styles.tile}>
             {articleNavigation}
+            <MarkCompleteButton slug={slug} />
+          </div>
           </article>
         }
       />
