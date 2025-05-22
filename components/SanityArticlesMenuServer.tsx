@@ -95,12 +95,13 @@ export default async function SanityArticlesMenuServer({ activeSlug }: MenuProps
           .select({ article_slug: articleProgress.articleSlug })
           .from(articleProgress)
           .where(eq(articleProgress.userId, userId)),
-        1000
+        3000
       )
 
       completedSlugs = new Set(rows.map(r => r.article_slug))
-      const completedCount = articles.filter(a => completedSlugs.has(a.slug.current)).length
-      progressPercentage = Math.round((completedCount / articles.length) * 100)
+      const terminalArticles = articles.filter(a => !articles.some(b => b.chapter_id.startsWith(`${a.chapter_id}.`)))
+      const completedCount = terminalArticles.filter(a => completedSlugs.has(a.slug.current)).length
+      progressPercentage = Math.round((completedCount / terminalArticles.length) * 100)
     } catch (err) {
       console.error("Failed to fetch user progress:", err)
       progressPercentage = null

@@ -4,14 +4,20 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useUser } from '@clerk/nextjs'
 
-export default function MarkCompleteButton({ slug }: { slug: string }) {
+export default function MarkCompleteButton({
+  slug,
+  isLeaf,
+}: {
+  slug: string
+  isLeaf: boolean
+}) {
   const { user } = useUser()
   const [completed, setCompleted] = useState(false)
   const [ready, setReady] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
-    if (!user) return
+    if (!user || !isLeaf) return
 
     let active = true
 
@@ -42,7 +48,7 @@ export default function MarkCompleteButton({ slug }: { slug: string }) {
     return () => {
       active = false
     }
-  }, [slug, user])
+  }, [slug, user, isLeaf])
 
   const handleClick = async () => {
     const res = await fetch('/api/progress/complete', {
@@ -57,7 +63,7 @@ export default function MarkCompleteButton({ slug }: { slug: string }) {
     }
   }
 
-  if (!user || !ready) return null
+  if (!user || !ready || !isLeaf) return null
 
   return completed ? (
     <p className="mt-6 text-green-600 font-medium">Marked as completed</p>

@@ -364,47 +364,54 @@ export default async function ItemPage({
     </nav>
   );
 
-  return (
-    <>
-      {/* For dynamic articles, metadata (including SEO fields) is now handled via generateMetadata.
-          The structuredData is output here if available. */}
-      {seo?.structuredData && (
-        <Head>
-          <script type="application/ld+json">{seo.structuredData}</script>
-        </Head>
-      )}
-      <SidebarToggleLayout
-        sidebar={<SanityArticlesMenuServer activeSlug={slug} />}
-        main={
-          <article className={styles.tiles}>
-            <h2 className={styles.title}>{item.title}</h2>
-            <div className={styles.tile}>
-              <div dangerouslySetInnerHTML={{ __html: item.body }} />
-            </div>
-            <div className={styles.tile}>
-              <h2>Advanced Concepts for the Enthusiast</h2>
-              <div dangerouslySetInnerHTML={{ __html: item.advanced }} />
-            </div>
-            <div className={styles.tile}>
-            <h2>Clinical Relevance</h2>
-            <SignedIn>
-              <div dangerouslySetInnerHTML={{ __html: item.clinical }} />
-            </SignedIn>
-            <SignedOut>
-              <p>
-                This section is available for free to registered users. Sign up
-                using the options that appear at the top of this page.
-              </p>
-            </SignedOut>
-          </div>
+    // Fetch all chapter_ids to determine if current is a leaf
+    const allChapterIds: string[] = await client.fetch(`*[_type == "articles"][]{ "id": chapter_id }`)
+      .then((results: { id: string }[]) => results.map((r: { id: string }) => r.id))
 
-          <div className={styles.tile}>
-            {articleNavigation}
-            <MarkCompleteButton slug={slug} />
-          </div>
-          </article>
-        }
-      />
-    </>
-  );
+    const itemChapterIdQuery = `*[_type == "articles" && slug.current == $slug][0]{ chapter_id }`
+    const { chapter_id }: { chapter_id: string } = await client.fetch(itemChapterIdQuery, { slug })
+
+    const isLeaf = !allChapterIds.some(id => id.startsWith(`${chapter_id}.`))
+
+    return (
+      <>
+        {seo?.structuredData && (
+          <Head>
+            <script type="application/ld+json">{seo.structuredData}</script>
+          </Head>
+        )}
+        <SidebarToggleLayout
+          sidebar={<SanityArticlesMenuServer activeSlug={slug} />}
+          main={
+            <article className={styles.tiles}>
+              <h2 className={styles.title}>{item.title}</h2>
+              <div className={styles.tile}>
+                <div dangerouslySetInnerHTML={{ __html: item.body }} />
+              </div>
+              <div className={styles.tile}>
+                <h2>Advanced Concepts for the Enthusiast</h2>
+                <div dangerouslySetInnerHTML={{ __html: item.advanced }} />
+              </div>
+              <div className={styles.tile}>
+                <h2>Clinical Relevance</h2>
+                <SignedIn>
+                  <div dangerouslySetInnerHTML={{ __html: item.clinical }} />
+                </SignedIn>
+                <SignedOut>
+                  <p>
+                    This section is available for free to registered users. Sign up
+                    using the options that appear at the top of this page.
+                  </p>
+                </SignedOut>
+              </div>
+
+              <div className={styles.tile}>
+                {articleNavigation}
+                {isLeaf && <MarkCompleteButton slug={slug} isLeaf={true} />}
+              </div>
+            </article>
+          }
+        />
+      </>
+    );
 }

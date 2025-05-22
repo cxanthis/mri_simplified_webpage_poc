@@ -2,6 +2,7 @@
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import { FaChevronRight, FaChevronDown } from "react-icons/fa";
+import { useUser } from '@clerk/nextjs'
 
 interface Article {
   chapter_id: string;
@@ -28,6 +29,9 @@ export default function InteractiveMenu({
 }: InteractiveMenuProps) {
   const completedSet = useMemo(() => new Set(completedSlugs), [completedSlugs]);
 
+  const { user } = useUser()
+  const showStatus = Boolean(user)
+
   const initiallyExpanded = useMemo(() => {
     const expandedSet = new Set<string>();
 
@@ -46,6 +50,30 @@ export default function InteractiveMenu({
 
     return expandedSet;
   }, [activeSlug, activeArticle, tree]);
+
+  const getNodeStatus = (node: TreeNode): 'completed' | 'on-going' | 'not-started' | null => {
+    if (!node.children || node.children.length === 0) return null
+
+    const children = flattenTree(node)
+    const doneCount = children.filter(n => completedSet.has(n.slug.current)).length
+
+    if (doneCount === 0) return 'not-started'
+    if (doneCount === children.length) return 'completed'
+    return 'on-going'
+  }
+
+  const flattenTree = (node: TreeNode): TreeNode[] => {
+    const stack = [...node.children]
+    const result: TreeNode[] = []
+
+    while (stack.length) {
+      const n = stack.pop()!
+      result.push(n)
+      stack.push(...n.children)
+    }
+
+    return result
+  }
 
   const [expanded, setExpanded] = useState<Set<string>>(initiallyExpanded);
 
@@ -80,7 +108,7 @@ export default function InteractiveMenu({
       const isActive = activeSlug === node.slug.current;
       const hasChildren = node.children && node.children.length > 0;
       const isExpanded = expanded.has(node.chapter_id);
-      const isCompleted = completedSet.has(node.slug.current);
+      const status = getNodeStatus(node)
 
       return (
         <React.Fragment key={node.chapter_id}>
@@ -122,9 +150,21 @@ export default function InteractiveMenu({
               </button>
             )}
 
-            {/* Checkmark if completed */}
-            {isCompleted && (
-              <span className="text-green-600 text-sm ml-2">✔</span>
+            {showStatus && (
+              <>
+                {status === 'completed' && (
+                  <span className="ml-2 px-2 py-0.5 text-xs rounded bg-green-600 text-white">Done</span>
+                )}
+                {status === 'on-going' && (
+                  <span className="ml-2 px-2 py-0.5 text-xs rounded bg-yellow-500 text-white">On-going</span>
+                )}
+                {status === 'not-started' && (
+                  <span className="ml-2 px-2 py-0.5 text-xs rounded bg-gray-400 text-white">Not started</span>
+                )}
+                {!status && completedSet.has(node.slug.current) && (
+                  <span className="ml-2 px-2 py-0.5 text-xs rounded bg-green-600 text-white">Done</span>
+                )}
+              </>
             )}
 
             <span className="ml-auto text-xs text-gray-500">
