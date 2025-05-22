@@ -150,26 +150,27 @@ export default function InteractiveMenu({
               </button>
             )}
 
-            {showStatus && (
-              <>
-                {status === 'completed' && (
-                  <span className="ml-2 px-2 py-0.5 text-xs rounded bg-green-600 text-white">Done</span>
-                )}
-                {status === 'on-going' && (
-                  <span className="ml-2 px-2 py-0.5 text-xs rounded bg-yellow-500 text-white">On-going</span>
-                )}
-                {status === 'not-started' && (
-                  <span className="ml-2 px-2 py-0.5 text-xs rounded bg-gray-400 text-white">Not started</span>
-                )}
-                {!status && completedSet.has(node.slug.current) && (
-                  <span className="ml-2 px-2 py-0.5 text-xs rounded bg-green-600 text-white">Done</span>
-                )}
-              </>
-            )}
-
             <span className="ml-auto text-xs text-gray-500">
               {getSubLabel(node)}
             </span>
+
+            {showStatus && (
+              <>
+                {status === 'completed' && (
+                  <span className="ml-2 px-2 py-0.5 text-xs rounded bg-[#88b04b] text-white">Done</span>
+                )}
+                {status === 'on-going' && (
+                  <span className="ml-2 px-2 py-0.5 text-xs rounded bg-[#f4a261] text-white">On-going</span>
+                )}
+                {status === 'not-started' && (
+                  <span className="ml-2 px-2 py-0.5 text-xs rounded bg-[#c9c9c9] text-black">Not started</span>
+                )}
+                {!status && completedSet.has(node.slug.current) && (
+                  <span className="ml-2 px-2 py-0.5 text-xs rounded bg-[#88b04b] text-white">Done</span>
+                )}
+              </>
+            )}
+            
           </li>
 
           {hasChildren && isExpanded && (

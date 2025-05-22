@@ -39,7 +39,7 @@ export default function SidebarToggleLayout({
             {/* Toggle Icon placed at the right edge of the sidebar */}
             <button
               onClick={toggleSidebar}
-              className="absolute top-14 -right-3 transform -translate-y-1/2 bg-red-400 text-white p-1 rounded-full shadow-lg"
+              className="absolute top-26 -right-3 transform -translate-y-1/2 bg-[#e76f51] text-white p-1 rounded-full shadow-lg"
             >
               {sidebarExpanded ? <FaChevronLeft /> : <FaChevronRight />}
             </button>

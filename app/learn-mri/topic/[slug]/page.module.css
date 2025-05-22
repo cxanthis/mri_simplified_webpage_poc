@@ -12,14 +12,14 @@
 .title {
   text-align: left;
   font-size: 3rem;    
-  margin-top: 1rem;
+  margin-top: -1.5rem;
 }
 
 .tiles {
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  margin-top: 2rem;
+  margin-top: 1rem;
 }
 
 .tile p {
@@ -31,7 +31,7 @@
 .tile h2 {
   font-size: 1.8rem;
   line-height: 1.4;
-  margin-top: 1.5rem;
+  margin-top: 1rem;
   margin-bottom: 1rem;
 }
 
