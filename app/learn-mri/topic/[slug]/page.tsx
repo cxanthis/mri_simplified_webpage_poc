@@ -39,6 +39,7 @@ interface SEO {
 interface ArticleNavigation {
   title: string;
   slug: string;
+  articleType?: "part" | "chapter" | "section" | "sub-section" | "topic";
 }
 
 interface Item {
@@ -302,15 +303,18 @@ export default async function ItemPage({
     },
     previousArticle->{
       title,
-      "slug": slug.current
+      "slug": slug.current,
+      articleType
     },
     nextArticle->{
       title,
-      "slug": slug.current
+      "slug": slug.current,
+      articleType
     },
     parentArticle->{
       title,
-      "slug": slug.current
+      "slug": slug.current,
+      articleType
     }
   }`;
 
@@ -326,7 +330,8 @@ export default async function ItemPage({
   const articleNavigation = (
     <nav className={styles.articleNav}>
       <div className={styles.navItem}>
-        {item.previousArticle ? (
+        {item.previousArticle &&
+        !["part", "chapter"].includes(item.previousArticle.articleType || "") ? (
           <Link
             href={`/learn-mri/topic/${item.previousArticle.slug}`}
             className={styles.navLink}
@@ -338,7 +343,8 @@ export default async function ItemPage({
         )}
       </div>
       <div className={styles.navItem} style={{ textAlign: "center" }}>
-        {item.parentArticle ? (
+        {item.parentArticle &&
+        !["part", "chapter"].includes(item.parentArticle.articleType || "") ? (
           <Link
             href={`/learn-mri/topic/${item.parentArticle.slug}`}
             className={styles.navLink}
@@ -350,7 +356,8 @@ export default async function ItemPage({
         )}
       </div>
       <div className={styles.navItem} style={{ textAlign: "right" }}>
-        {item.nextArticle ? (
+        {item.nextArticle &&
+        !["part", "chapter"].includes(item.nextArticle.articleType || "") ? (
           <Link
             href={`/learn-mri/topic/${item.nextArticle.slug}`}
             className={styles.navLink}
@@ -363,6 +370,7 @@ export default async function ItemPage({
       </div>
     </nav>
   );
+
 
     // Fetch all chapter_ids to determine if current is a leaf
     const allChapterIds: string[] = await client.fetch(`*[_type == "articles"][]{ "id": chapter_id }`)
@@ -405,9 +413,9 @@ export default async function ItemPage({
                 </SignedOut>
               </div>
 
-              <div className={styles.tile}>
-                {articleNavigation}
+              <div className={styles.tile}>                
                 {isLeaf && <MarkCompleteButton slug={slug} isLeaf={true} />}
+                {articleNavigation}
               </div>
             </article>
           }
