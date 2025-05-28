@@ -1,13 +1,14 @@
 import { notFound } from "next/navigation";
 import Head from "next/head";
 import { Metadata } from "next";
+import Image from "next/image";
 import client from "../../../../sanityClient";
 import styles from "./page.module.css";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 import SanityArticlesMenuServer from "../../../../components/SanityArticlesMenuServer";
 import SidebarToggleLayout from "../../../../components/SidebarToggleLayout";
 import Link from "next/link";
-import MarkCompleteButton from '@/components/MarkCompleteButton'
+import MarkCompleteButton from "@/components/MarkCompleteButton";
 
 interface SEO {
   seoTitle?: string;
@@ -56,6 +57,15 @@ interface Item {
   parentArticle?: ArticleNavigation;
   chapter_id: string;
 }
+
+// Return type for generateMetadata
+type ArticleMeta = {
+  title: string;
+  seo?: SEO;
+  previousArticle?: ArticleNavigation;
+  nextArticle?: ArticleNavigation;
+  parentArticle?: ArticleNavigation;
+};
 
 // Helper to trim nav titles
 function trimTitle(title: string, length = 20) {
@@ -106,14 +116,15 @@ export async function generateMetadata({
     }
   }`;
 
-  const article = await client.fetch(query, { slug });
+  // typed fetch to avoid `any`
+  const article = await client.fetch<ArticleMeta | null>(query, { slug });
   if (!article) {
     return {
       title: "Article Not Found",
       description: "The requested article was not found.",
     };
   }
-  const seo = (article as any).seo || {};
+  const seo = article.seo ?? {};
   return {
     title: seo.seoTitle || article.title,
     description: seo.seoDescription || "",
@@ -123,7 +134,9 @@ export async function generateMetadata({
     openGraph: {
       title: seo.og?.ogTitle || seo.seoTitle || article.title,
       description: seo.og?.ogDescription || seo.seoDescription || "",
-      images: seo.og?.ogImage?.asset?.url ? [{ url: seo.og.ogImage.asset.url }] : undefined,
+      images: seo.og?.ogImage?.asset?.url
+        ? [{ url: seo.og.ogImage.asset.url }]
+        : undefined,
     },
     twitter: {
       title: seo.twitter?.twitterTitle || seo.seoTitle || article.title,
@@ -320,9 +333,7 @@ export default async function ItemPage({
   }`;
 
   const item: Item | null = await client.fetch(query, { slug });
-  if (!item) {
-    notFound();
-  }
+  if (!item) notFound();
 
   const seo = item.seo;
 
@@ -410,9 +421,11 @@ export default async function ItemPage({
                           key={`img-body-${idx}`}
                           className={styles.imageFigure}
                         >
-                          <img
+                          <Image
                             src={img.image.asset.url}
-                            alt={img.image.caption || ""}
+                            alt={img.image.caption ?? ""}
+                            width={800}
+                            height={600}
                             className={styles.articleImage}
                           />
                           {img.image.caption && (
@@ -451,9 +464,11 @@ export default async function ItemPage({
                           key={`img-adv-${idx}`}
                           className={styles.imageFigure}
                         >
-                          <img
+                          <Image
                             src={img.image.asset.url}
-                            alt={img.image.caption || ""}
+                            alt={img.image.caption ?? ""}
+                            width={800}
+                            height={600}
                             className={styles.articleImage}
                           />
                           {img.image.caption && (
@@ -493,9 +508,11 @@ export default async function ItemPage({
                             key={`img-clin-${idx}`}
                             className={styles.imageFigure}
                           >
-                            <img
+                            <Image
                               src={img.image.asset.url}
-                              alt={img.image.caption || ""}
+                              alt={img.image.caption ?? ""}
+                              width={800}
+                              height={600}
                               className={styles.articleImage}
                             />
                             {img.image.caption && (
