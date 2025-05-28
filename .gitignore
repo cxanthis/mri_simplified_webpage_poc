@@ -44,3 +44,6 @@ next-env.d.ts
 /.clerk/
 
 .vercel
+
+# Local images
+/public/local_only
