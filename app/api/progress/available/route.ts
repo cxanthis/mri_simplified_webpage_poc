@@ -7,8 +7,10 @@ export async function GET() {
   try {
     await withTimeout(db.execute(sql`SELECT 1`), 3000)
     return new Response('OK')
-  } catch (_err) {
-    await sendSlackAlert('[DB ERROR] /api/progress/available failed to connect to database.')
+  } catch {
+    await sendSlackAlert(
+      '[DB ERROR] /api/progress/available failed to connect to database.'
+    )
     return new Response('Database unavailable', { status: 503 })
   }
 }
