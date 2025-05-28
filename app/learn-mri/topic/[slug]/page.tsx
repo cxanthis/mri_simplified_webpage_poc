@@ -20,18 +20,14 @@ interface SEO {
     ogTitle?: string;
     ogDescription?: string;
     ogImage?: {
-      asset?: {
-        url: string;
-      };
+      asset?: { url: string };
     };
   };
   twitter?: {
     twitterTitle?: string;
     twitterDescription?: string;
     twitterImage?: {
-      asset?: {
-        url: string;
-      };
+      asset?: { url: string };
     };
   };
 }
@@ -47,27 +43,30 @@ interface Item {
   body: string;
   advanced: string;
   clinical: string;
+  images?: {
+    position: number;
+    image: {
+      asset: { url: string };
+      caption?: string;
+    };
+  }[];
   seo?: SEO;
   previousArticle?: ArticleNavigation;
   nextArticle?: ArticleNavigation;
   parentArticle?: ArticleNavigation;
+  chapter_id: string;
 }
 
-// Helper function to trim article titles to a maximum number of characters.
-const trimTitle = (title: string, maxLength: number = 25): string =>
-  title.length > maxLength ? title.substring(0, maxLength) + "..." : title;
+// Helper to trim nav titles
+function trimTitle(title: string, length = 20) {
+  return title.length > length ? `${title.substr(0, length)}…` : title;
+}
 
-/**
- * generateMetadata
- * Fetches SEO metadata for the dynamic article from Sanity.
- * Next.js will merge and override the defaults from app/layout.tsx.
- */
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  // Await the params to ensure we have an object.
   const { slug } = await params;
 
   const query = `*[slug.current == $slug][0]{ 
@@ -82,21 +81,28 @@ export async function generateMetadata({
       og {
         ogTitle,
         ogDescription,
-        ogImage{
-          asset->{
-            url
-          }
-        }
+        ogImage{ asset->{ url } }
       },
       twitter {
         twitterTitle,
         twitterDescription,
-        twitterImage{
-          asset->{
-            url
-          }
-        }
+        twitterImage{ asset->{ url } }
       }
+    },
+    previousArticle->{
+      title,
+      "slug": slug.current,
+      articleType
+    },
+    nextArticle->{
+      title,
+      "slug": slug.current,
+      articleType
+    },
+    parentArticle->{
+      title,
+      "slug": slug.current,
+      articleType
     }
   }`;
 
@@ -107,7 +113,7 @@ export async function generateMetadata({
       description: "The requested article was not found.",
     };
   }
-  const seo = article.seo || {};
+  const seo = (article as any).seo || {};
   return {
     title: seo.seoTitle || article.title,
     description: seo.seoDescription || "",
@@ -117,9 +123,7 @@ export async function generateMetadata({
     openGraph: {
       title: seo.og?.ogTitle || seo.seoTitle || article.title,
       description: seo.og?.ogDescription || seo.seoDescription || "",
-      images: seo.og?.ogImage?.asset?.url
-        ? [{ url: seo.og.ogImage.asset.url }]
-        : undefined,
+      images: seo.og?.ogImage?.asset?.url ? [{ url: seo.og.ogImage.asset.url }] : undefined,
     },
     twitter: {
       title: seo.twitter?.twitterTitle || seo.seoTitle || article.title,
@@ -136,10 +140,9 @@ export default async function ItemPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const resolvedParams = await params;
-  const { slug } = resolvedParams;
+  const { slug } = await params;
 
-  // Render static pages as before.
+  // Static pages
   if (slug === "mri-fundamentals") {
     return (
       <>
@@ -149,7 +152,6 @@ export default async function ItemPage({
             name="description"
             content="Learn the core principles, physics, and instrumentation behind MRI technology."
           />
-          {/* Add additional static meta tags for this page as needed */}
         </Head>
         <SidebarToggleLayout
           sidebar={<SanityArticlesMenuServer activeSlug={slug} />}
@@ -168,8 +170,7 @@ export default async function ItemPage({
                   Procedures and MRI Safety. While the latter focus on the practical
                   application and risk management in clinical settings, the
                   fundamentals ensure that you have a solid grasp of the theoretical
-                  concepts essential for interpreting and executing advanced imaging
-                  techniques.
+                  concepts essential for interpreting and exec
                 </p>
                 <p>
                   Whether you are a student, researcher, or medical professional, a
@@ -192,7 +193,6 @@ export default async function ItemPage({
             name="description"
             content="Discover detailed guidelines on patient preparation, imaging sequences, and protocols for accurate MRI diagnostics."
           />
-          {/* Additional static meta tags as needed */}
         </Head>
         <SidebarToggleLayout
           sidebar={<SanityArticlesMenuServer activeSlug={slug} />}
@@ -235,7 +235,6 @@ export default async function ItemPage({
             name="description"
             content="Explore protocols and best practices designed to maintain a secure MRI imaging environment."
           />
-          {/* Additional static meta tags as needed */}
         </Head>
         <SidebarToggleLayout
           sidebar={<SanityArticlesMenuServer activeSlug={slug} />}
@@ -269,12 +268,21 @@ export default async function ItemPage({
     );
   }
 
-  // For dynamic articles, update the query to include SEO-related fields.
-  const query = `*[slug.current == $slug][0]{
+  // Dynamic content
+  const query = `*[_type == "articles" && slug.current == $slug][0]{
     title,
     body,
     advanced,
     clinical,
+    images[]{
+      position,
+      image{
+        asset->{
+          url
+        },
+        caption
+      }
+    },
     seo {
       seoTitle,
       seoDescription,
@@ -285,20 +293,12 @@ export default async function ItemPage({
       og {
         ogTitle,
         ogDescription,
-        ogImage{
-          asset->{
-            url
-          }
-        }
+        ogImage{ asset->{ url } }
       },
       twitter {
         twitterTitle,
         twitterDescription,
-        twitterImage{
-          asset->{
-            url
-          }
-        }
+        twitterImage{ asset->{ url } }
       }
     },
     previousArticle->{
@@ -315,7 +315,8 @@ export default async function ItemPage({
       title,
       "slug": slug.current,
       articleType
-    }
+    },
+    chapter_id
   }`;
 
   const item: Item | null = await client.fetch(query, { slug });
@@ -323,10 +324,8 @@ export default async function ItemPage({
     notFound();
   }
 
-  // Extract SEO fields if available.
   const seo = item.seo;
 
-  // Render the fixed three-column navigation.
   const articleNavigation = (
     <nav className={styles.articleNav}>
       <div className={styles.navItem}>
@@ -339,7 +338,7 @@ export default async function ItemPage({
             &larr; {trimTitle(item.previousArticle.title)}
           </Link>
         ) : (
-          <span></span>
+          <span />
         )}
       </div>
       <div className={styles.navItem} style={{ textAlign: "center" }}>
@@ -352,7 +351,7 @@ export default async function ItemPage({
             Up: {trimTitle(item.parentArticle.title)}
           </Link>
         ) : (
-          <span></span>
+          <span />
         )}
       </div>
       <div className={styles.navItem} style={{ textAlign: "right" }}>
@@ -365,61 +364,176 @@ export default async function ItemPage({
             {trimTitle(item.nextArticle.title)} &rarr;
           </Link>
         ) : (
-          <span></span>
+          <span />
         )}
       </div>
     </nav>
   );
 
+  const allChapterIds: string[] = await client
+    .fetch(`*[_type == "articles"][]{ "id": chapter_id }`)
+    .then((results: { id: string }[]) => results.map((r) => r.id));
+  const { chapter_id } = (await client.fetch(
+    `*[_type == "articles" && slug.current == $slug][0]{ chapter_id }`,
+    { slug }
+  )) as { chapter_id: string };
+  const isLeaf = !allChapterIds.some((id) => id.startsWith(`${chapter_id}.`));
 
-    // Fetch all chapter_ids to determine if current is a leaf
-    const allChapterIds: string[] = await client.fetch(`*[_type == "articles"][]{ "id": chapter_id }`)
-      .then((results: { id: string }[]) => results.map((r: { id: string }) => r.id))
+  // Sort images by their declared position
+  const images = item.images || [];
+  const sortedImages = images.slice().sort((a, b) => a.position - b.position);
+  let paragraphIndex = 1;
 
-    const itemChapterIdQuery = `*[_type == "articles" && slug.current == $slug][0]{ chapter_id }`
-    const { chapter_id }: { chapter_id: string } = await client.fetch(itemChapterIdQuery, { slug })
+  return (
+    <>
+      {seo?.structuredData && (
+        <Head>
+          <script type="application/ld+json">{seo.structuredData}</script>
+        </Head>
+      )}
+      <SidebarToggleLayout
+        sidebar={<SanityArticlesMenuServer activeSlug={slug} />}
+        main={
+          <article className={styles.tiles}>
+            <h2 className={styles.title}>{item.title}</h2>
 
-    const isLeaf = !allChapterIds.some(id => id.startsWith(`${chapter_id}.`))
+            {/* BODY with injected images */}
+            <div className={styles.tile}>
+              {(() => {
+                const elements: React.ReactNode[] = [];
+                const paragraphs = item.body.match(/<p>.*?<\/p>/gi) || [];
+                paragraphs.forEach((para, idx) => {
+                  sortedImages.forEach((img) => {
+                    if (img.position === paragraphIndex) {
+                      elements.push(
+                        <figure
+                          key={`img-body-${idx}`}
+                          className={styles.imageFigure}
+                        >
+                          <img
+                            src={img.image.asset.url}
+                            alt={img.image.caption || ""}
+                            className={styles.articleImage}
+                          />
+                          {img.image.caption && (
+                            <figcaption
+                              className={styles.imageCaption}
+                              dangerouslySetInnerHTML={{ __html: img.image.caption }}
+                            />
+                          )}
+                        </figure>
+                      );
+                    }
+                  });
+                  elements.push(
+                    <div
+                      key={`body-para-${idx}`}
+                      dangerouslySetInnerHTML={{ __html: para }}
+                    />
+                  );
+                  paragraphIndex++;
+                });
+                return elements;
+              })()}
+            </div>
 
-    return (
-      <>
-        {seo?.structuredData && (
-          <Head>
-            <script type="application/ld+json">{seo.structuredData}</script>
-          </Head>
-        )}
-        <SidebarToggleLayout
-          sidebar={<SanityArticlesMenuServer activeSlug={slug} />}
-          main={
-            <article className={styles.tiles}>
-              <h2 className={styles.title}>{item.title}</h2>
-              <div className={styles.tile}>
-                <div dangerouslySetInnerHTML={{ __html: item.body }} />
-              </div>
-              <div className={styles.tile}>
-                <h2>Advanced Concepts for the Enthusiast</h2>
-                <div dangerouslySetInnerHTML={{ __html: item.advanced }} />
-              </div>
-              <div className={styles.tile}>
-                <h2>Clinical Relevance</h2>
-                <SignedIn>
-                  <div dangerouslySetInnerHTML={{ __html: item.clinical }} />
-                </SignedIn>
-                <SignedOut>
-                  <p>
-                    This section is available for free to registered users. Sign up
-                    using the options that appear at the top of this page.
-                  </p>
-                </SignedOut>
-              </div>
+            {/* ADVANCED with injected images */}
+            <div className={styles.tile}>
+              <h2>Advanced Concepts for the Enthusiast</h2>
+              {(() => {
+                const elements: React.ReactNode[] = [];
+                const paragraphs = item.advanced.match(/<p>.*?<\/p>/gi) || [];
+                paragraphs.forEach((para, idx) => {
+                  sortedImages.forEach((img) => {
+                    if (img.position === paragraphIndex) {
+                      elements.push(
+                        <figure
+                          key={`img-adv-${idx}`}
+                          className={styles.imageFigure}
+                        >
+                          <img
+                            src={img.image.asset.url}
+                            alt={img.image.caption || ""}
+                            className={styles.articleImage}
+                          />
+                          {img.image.caption && (
+                            <figcaption
+                              className={styles.imageCaption}
+                              dangerouslySetInnerHTML={{ __html: img.image.caption }}
+                            />
+                          )}
+                        </figure>
+                      );
+                    }
+                  });
+                  elements.push(
+                    <div
+                      key={`adv-para-${idx}`}
+                      dangerouslySetInnerHTML={{ __html: para }}
+                    />
+                  );
+                  paragraphIndex++;
+                });
+                return elements;
+              })()}
+            </div>
 
-              <div className={styles.tile}>                
-                {isLeaf && <MarkCompleteButton slug={slug} isLeaf={true} />}
-                {articleNavigation}
-              </div>
-            </article>
-          }
-        />
-      </>
-    );
+            {/* CLINICAL with injected images */}
+            <div className={styles.tile}>
+              <h2>Clinical Relevance</h2>
+              <SignedIn>
+                {(() => {
+                  const elements: React.ReactNode[] = [];
+                  const paragraphs = item.clinical.match(/<p>.*?<\/p>/gi) || [];
+                  paragraphs.forEach((para, idx) => {
+                    sortedImages.forEach((img) => {
+                      if (img.position === paragraphIndex) {
+                        elements.push(
+                          <figure
+                            key={`img-clin-${idx}`}
+                            className={styles.imageFigure}
+                          >
+                            <img
+                              src={img.image.asset.url}
+                              alt={img.image.caption || ""}
+                              className={styles.articleImage}
+                            />
+                            {img.image.caption && (
+                              <figcaption
+                                className={styles.imageCaption}
+                                dangerouslySetInnerHTML={{ __html: img.image.caption }}
+                              />
+                            )}
+                          </figure>
+                        );
+                      }
+                    });
+                    elements.push(
+                      <div
+                        key={`clin-para-${idx}`}
+                        dangerouslySetInnerHTML={{ __html: para }}
+                      />
+                    );
+                    paragraphIndex++;
+                  });
+                  return elements;
+                })()}
+              </SignedIn>
+              <SignedOut>
+                <p>
+                  This section is available for free to registered users. Sign up
+                  using the options that appear at the top of this page.
+                </p>
+              </SignedOut>
+            </div>
+
+            <div className={styles.tile}>
+              {isLeaf && <MarkCompleteButton slug={slug} isLeaf={true} />}
+              {articleNavigation}
+            </div>
+          </article>
+        }
+      />
+    </>
+  );
 }
