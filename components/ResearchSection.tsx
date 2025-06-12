@@ -29,7 +29,7 @@ export default async function ResearchSection() {
         <h2 className="text-2xl font-bold">Research topics</h2>
         <Link
           href="/research-topic"
-          className="text-black-600 hover:underline flex items-center"
+          className="text-gray-600 hover:underline flex items-center"
         >
           More Research topics &rarr;
         </Link>
