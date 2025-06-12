@@ -60,7 +60,7 @@ export default function Navbar() {
 
           {/* Mobile menu */}
           {menuOpen && (
-            <div className="absolute top-20 left-0 w-full bg-white border-b md:hidden z-10">
+            <div className="absolute top-20 left-0 w-full bg-white border-b lg:hidden z-10">
               <div className="flex flex-col p-4 space-y-2">
                 <Link href="/learn-mri" className={linkClass('/learn-mri')}
                   onClick={() => setMenuOpen(false)}>
@@ -95,7 +95,7 @@ export default function Navbar() {
             </button>
             <SignedOut>
               <SignInButton mode="modal">
-                <button className="bg-[#000000] text-white px-4 py-2 rounded-md font-medium hidden md:block mr-2">
+                <button className="bg-[#000000] text-white px-4 py-2 rounded-md font-medium mr-2">
                   Sign In
                 </button>
               </SignInButton>
