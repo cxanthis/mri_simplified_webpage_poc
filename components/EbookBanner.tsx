@@ -8,7 +8,7 @@ export default function Banner() {
           <div className="max-w-2xl">
             <h2 className="text-2xl font-bold">Are you about to take the ARRT exam?</h2>
             <p className="mt-3 text-lg">
-              If you want the physical copy of the MRI ebook (MRI Fundamentals, MRI Proceduces and MRI Safety), you can download it here.
+              If you want the physical copy of the MRI ebook (MRI Fundamentals, MRI Procedures and MRI Safety), you can download it here.
             </p>
             <SignedIn>
               <button className="mt-6 bg-white text-black px-6 py-2 text-lg hover:bg-gray-300">
