@@ -34,16 +34,17 @@ export default function SidebarToggleLayout({
       {header && <header className="bg-gray-200 p-4">{header}</header>}
 
       {/* Mobile hamburger */}
-      <div className="md:hidden p-2 border-b">
+      <div className="lg:hidden p-2 border-b flex items-center">
         <button onClick={toggleMobile} aria-label="Open menu">
           <FaBars />
         </button>
+        <span className="ml-2 font-medium">Ebook content</span>
       </div>
 
       {/* Main Content Area */}
       <div className="flex flex-1">
         <aside
-          className={`hidden md:block border-r border-gray-200 bg-white transition-all duration-300 ${
+          className={`hidden lg:block border-r border-gray-200 bg-white transition-all duration-300 ${
             sidebarExpanded ? "w-2/6" : "w-10"
           }`}
         >
