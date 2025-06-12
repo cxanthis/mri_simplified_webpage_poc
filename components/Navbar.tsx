@@ -95,7 +95,7 @@ export default function Navbar() {
             </button>
             <SignedOut>
               <SignInButton mode="modal">
-                <button className="bg-[#000000] text-white px-4 py-2 rounded-md font-medium hidden md:block">
+                <button className="bg-[#000000] text-white px-4 py-2 rounded-md font-medium hidden md:block mr-2">
                   Sign In
                 </button>
               </SignInButton>
