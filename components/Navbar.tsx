@@ -26,7 +26,7 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-20">
           <div className="flex items-center">
             <button
-              className="md:hidden p-2 mr-2"
+              className="lg:hidden p-2 mr-2"
               onClick={() => setMenuOpen(!menuOpen)}
             >
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -43,7 +43,7 @@ export default function Navbar() {
             </Link>
           </div>
 
-          <div className="hidden md:flex space-x-8">
+          <div className="hidden lg:flex space-x-8">
             <Link href="/learn-mri" className={linkClass('/learn-mri')}>
               Learn MRI
             </Link>
