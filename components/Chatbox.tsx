@@ -26,6 +26,15 @@ export default function Chatbox() {
   const [expanded, setExpanded] = useState(false);
   const [isMaximized, setIsMaximized] = useState(false);
   const [showTooltip, setShowTooltip] = useState(true);
+  const [viewport, setViewport] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    const update = () =>
+      setViewport({ width: window.innerWidth, height: window.innerHeight });
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
 
   const handleToggleOpen = () => {
     if (expanded) setIsMaximized(false);
@@ -66,15 +75,23 @@ export default function Chatbox() {
     if (container) container.scrollTop = container.scrollHeight;
   }, [messages, loading]);
 
-  const sizeClasses = expanded
-    ? isMaximized
-      ? 'w-[640px] h-[768px]'
-      : 'w-[384px] h-[606px]'
-    : '';
+  const margin = 32; // leave space for screen edges
+  const calcWidth = (w: number) => Math.min(w, viewport.width - margin);
+  const calcHeight = (h: number) => Math.min(h, viewport.height - margin);
+
+  const boxWidth = expanded
+    ? calcWidth(isMaximized ? 640 : 384)
+    : undefined;
+  const boxHeight = expanded
+    ? calcHeight(isMaximized ? 768 : 606)
+    : undefined;
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
-      <div className={`transition-all duration-300 ${sizeClasses}`}>
+      <div
+        className="transition-all duration-300"
+        style={{ width: boxWidth, height: boxHeight }}
+      >
         {expanded ? (
           <div className="relative flex flex-col h-full bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
             {!isSignedIn && (
