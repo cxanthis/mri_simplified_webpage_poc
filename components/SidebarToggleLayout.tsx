@@ -1,7 +1,7 @@
 // components/SidebarToggleLayout.tsx
 "use client";
 import React, { useState } from "react";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaBars, FaTimes } from "react-icons/fa";
 
 interface SidebarToggleLayoutProps {
   sidebar: React.ReactNode;
@@ -18,9 +18,14 @@ export default function SidebarToggleLayout({
 }: SidebarToggleLayoutProps) {
   // When true, the sidebar is fully expanded; when false, it collapses.
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const toggleSidebar = () => {
     setSidebarExpanded((prev) => !prev);
+  };
+
+  const toggleMobile = () => {
+    setMobileOpen((prev) => !prev);
   };
 
   return (
@@ -28,10 +33,17 @@ export default function SidebarToggleLayout({
       {/* Optional Header */}
       {header && <header className="bg-gray-200 p-4">{header}</header>}
 
+      {/* Mobile hamburger */}
+      <div className="md:hidden p-2 border-b">
+        <button onClick={toggleMobile} aria-label="Open menu">
+          <FaBars />
+        </button>
+      </div>
+
       {/* Main Content Area */}
       <div className="flex flex-1">
         <aside
-          className={`border-r border-gray-200 bg-white transition-all duration-300 ${
+          className={`hidden md:block border-r border-gray-200 bg-white transition-all duration-300 ${
             sidebarExpanded ? "w-2/6" : "w-10"
           }`}
         >
@@ -52,6 +64,22 @@ export default function SidebarToggleLayout({
           {main}
         </main>
       </div>
+
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-50 bg-white overflow-auto">
+          <div className="p-4">
+            <button
+              onClick={toggleMobile}
+              className="mb-4"
+              aria-label="Close menu"
+            >
+              <FaTimes />
+            </button>
+            {sidebar}
+          </div>
+        </div>
+      )}
 
       {/* Optional Footer */}
       {footer && <footer className="bg-gray-200 p-4">{footer}</footer>}
