@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
+import { FaSignInAlt } from 'react-icons/fa';
 import {
   SignInButton,
   SignUpButton,
@@ -95,8 +96,11 @@ export default function Navbar() {
             </button>
             <SignedOut>
               <SignInButton mode="modal">
-                <button className="bg-[#000000] text-white px-4 py-2 rounded-md font-medium mr-2">
-                  Sign In
+                <button
+                  className="bg-[#000000] text-white px-4 py-2 rounded-md font-medium mr-2 flex items-center justify-center whitespace-nowrap"
+                >
+                  <FaSignInAlt className="h-5 w-5 max-[350px]:block hidden" />
+                  <span className="max-[350px]:hidden">Sign In</span>
                 </button>
               </SignInButton>
               <SignUpButton mode="modal">
