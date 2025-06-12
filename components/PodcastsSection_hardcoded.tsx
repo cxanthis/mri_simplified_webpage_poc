@@ -37,7 +37,7 @@ export default function PodcastsSection() {
 
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Podcasts</h2>
-        <Link href="/podcasts" className="text-black-600 hover:underline flex items-center">
+        <Link href="/podcasts" className="text-gray-600 hover:underline flex items-center">
           More Podcasts &rarr;
         </Link>
       </div>

@@ -44,7 +44,7 @@ export default async function NewsSection() {
 
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">News</h2>
-        <Link href="/news" className="text-black-600 hover:underline flex items-center">
+        <Link href="/news" className="text-gray-600 hover:underline flex items-center">
           More News &rarr;
         </Link>
       </div>
