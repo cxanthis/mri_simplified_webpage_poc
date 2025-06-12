@@ -34,11 +34,13 @@ export default function SidebarToggleLayout({
       {header && <header className="bg-gray-200 p-4">{header}</header>}
 
       {/* Mobile hamburger */}
-      <div className="lg:hidden p-2 border-b flex items-center">
-        <button onClick={toggleMobile} aria-label="Open menu">
-          <FaBars />
-        </button>
-        <span className="ml-2 font-medium">Ebook content</span>
+      <div className="lg:hidden border-b border-gray-200 bg-white">
+        <div className="container mx-auto px-4 md:px-6 flex items-center h-16">
+          <button onClick={toggleMobile} aria-label="Open menu" className="p-2 mr-2">
+            <FaBars className="h-6 w-6" />
+          </button>
+          <span className="text-lg font-medium">Ebook content</span>
+        </div>
       </div>
 
       {/* Main Content Area */}
