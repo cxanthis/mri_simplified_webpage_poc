@@ -39,7 +39,10 @@ export default function Navbar() {
                 />
               </svg>
             </button>
-            <Link href="/" className="text-3xl font-bold">
+            <Link
+              href="/"
+              className="text-xl sm:text-2xl md:text-3xl font-bold whitespace-nowrap"
+            >
               MRI simplified
             </Link>
           </div>
@@ -95,6 +98,11 @@ export default function Navbar() {
               </svg>
             </button>
             <SignedOut>
+              <SignUpButton mode="modal">
+                <button className="bg-navy text-white px-4 py-2 rounded-md font-medium hidden md:block">
+                  Sign Up
+                </button>
+              </SignUpButton>
               <SignInButton mode="modal">
                 <button
                   className="bg-[#000000] text-white px-4 py-2 rounded-md font-medium mr-2 flex items-center justify-center whitespace-nowrap"
@@ -103,11 +111,6 @@ export default function Navbar() {
                   <span className="max-[350px]:hidden">Sign In</span>
                 </button>
               </SignInButton>
-              <SignUpButton mode="modal">
-                <button className="bg-navy text-white px-4 py-2 rounded-md font-medium hidden md:block">
-                  Sign Up
-                </button>
-              </SignUpButton>
             </SignedOut>
             <SignedIn>
               <UserButton />
