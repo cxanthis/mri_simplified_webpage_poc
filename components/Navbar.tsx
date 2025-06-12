@@ -64,7 +64,7 @@ export default function Navbar() {
 
           {/* Mobile menu */}
           {menuOpen && (
-            <div className="absolute top-20 left-1/2 -translate-x-1/2 bg-white border rounded-lg shadow-lg max-w-[90vw] lg:hidden z-10">
+            <div className="absolute top-20 left-4 bg-white border rounded-lg shadow-lg max-w-[90vw] lg:hidden z-10">
               <div className="flex flex-col p-4 space-y-2">
                 <Link href="/learn-mri" className={linkClass('/learn-mri')}
                   onClick={() => setMenuOpen(false)}>
