@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 export default function Banner() {
     return (
-        <div className="w-full bg-black text-white p-8 mt-16 flex items-center justify-between">
+        <div className="w-full bg-black text-white p-8 mt-16 flex flex-col md:flex-row items-center justify-between gap-4">
           {/* Left side text content */}
           <div className="max-w-2xl">
             <h2 className="text-2xl font-bold">Are you about to take the ARRT exam?</h2>

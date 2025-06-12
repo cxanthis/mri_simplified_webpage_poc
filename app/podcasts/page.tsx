@@ -82,7 +82,7 @@ export default async function PodcastsPage({ searchParams }: PodcastsPageProps) 
               })
             : '';
           return (
-            <div key={index} className={`${styles.tile} flex items-center justify-between`}>
+            <div key={index} className={`${styles.tile} flex flex-col sm:flex-row items-center justify-between gap-4`}>
               <div className="flex flex-col gap-2">
                 <Link href={`/podcasts/${item.slug.current}`} className="group">
                   <h3 className="text-2xl font-bold mb-0 group-hover:text-blue-600 transition-colors">

@@ -49,7 +49,7 @@ export default async function NewsSection() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {newsData.map((item, index) => (
           <Link href={item.slug ? `/news/${item.slug.current}` : "#"} key={index} className="group">
             <div className="relative h-[360px] overflow-hidden rounded-lg">

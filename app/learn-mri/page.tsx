@@ -24,7 +24,7 @@ export default function LearnMRITextPage() {
               Begin by selecting one of the three parts below. Each part is organized into chapters, sections, subsections, 
               and topics, allowing you to dive deeply into the fascinating world of MRI.
             </p>
-            <div className="flex justify-between mt-10 pl-15 pr-15 w-full">
+            <div className="flex flex-col sm:flex-row justify-between mt-10 px-6 w-full gap-4">
               <Link 
                 href="/learn-mri/topic/mri-fundamentals" 
                 className="text-blue-600 hover:underline text-2xl"
