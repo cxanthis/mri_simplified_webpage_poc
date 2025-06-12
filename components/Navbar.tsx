@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState } from 'react';
+import { FaSignInAlt } from 'react-icons/fa';
 import {
   SignInButton,
   SignUpButton,
@@ -12,6 +14,7 @@ import {
 
 export default function Navbar() {
   const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const isActive = (path: string) => pathname === path || pathname.startsWith(`${path}/`);
 
@@ -23,7 +26,10 @@ export default function Navbar() {
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex justify-between items-center h-20">
           <div className="flex items-center">
-            <button className="md:hidden p-2 mr-2">
+            <button
+              className="lg:hidden p-2 mr-2"
+              onClick={() => setMenuOpen(!menuOpen)}
+            >
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
                   strokeLinecap="round"
@@ -33,12 +39,15 @@ export default function Navbar() {
                 />
               </svg>
             </button>
-            <Link href="/" className="text-3xl font-bold">
+            <Link
+              href="/"
+              className="text-xl sm:text-2xl md:text-3xl font-bold whitespace-nowrap"
+            >
               MRI simplified
             </Link>
           </div>
 
-          <div className="hidden md:flex space-x-8">
+          <div className="hidden lg:flex space-x-8">
             <Link href="/learn-mri" className={linkClass('/learn-mri')}>
               Learn MRI
             </Link>
@@ -53,28 +62,45 @@ export default function Navbar() {
             </Link>
           </div>
 
+          {/* Mobile menu */}
+          {menuOpen && (
+            <div className="absolute top-20 left-1/2 -translate-x-1/2 bg-white border rounded-lg shadow-lg max-w-[90vw] lg:hidden z-10">
+              <div className="flex flex-col p-4 space-y-2">
+                <Link href="/learn-mri" className={linkClass('/learn-mri')}
+                  onClick={() => setMenuOpen(false)}>
+                  Learn MRI
+                </Link>
+                <Link href="/news" className={linkClass('/news')}
+                  onClick={() => setMenuOpen(false)}>
+                  News
+                </Link>
+                <Link href="/research-topic" className={linkClass('/research-topic')}
+                  onClick={() => setMenuOpen(false)}>
+                  Research
+                </Link>
+                <Link href="/podcasts" className={linkClass('/podcasts')}
+                  onClick={() => setMenuOpen(false)}>
+                  Podcasts
+                </Link>
+              </div>
+            </div>
+          )}
+
           <div className="flex items-center gap-4">
-            <button className="p-2 mr-2">
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-            </button>
             <SignedOut>
-              <SignInButton mode="modal">
-                <button className="bg-[#000000] text-white px-4 py-2 rounded-md font-medium hidden md:block">
-                  Sign In
-                </button>
-              </SignInButton>
               <SignUpButton mode="modal">
                 <button className="bg-navy text-white px-4 py-2 rounded-md font-medium hidden md:block">
                   Sign Up
                 </button>
               </SignUpButton>
+              <SignInButton mode="modal">
+                <button
+                  className="bg-[#000000] text-white px-4 py-2 rounded-md font-medium mr-2 flex items-center justify-center whitespace-nowrap"
+                >
+                  <FaSignInAlt className="h-5 w-5 max-[350px]:block hidden" />
+                  <span className="max-[350px]:hidden">Sign In</span>
+                </button>
+              </SignInButton>
             </SignedOut>
             <SignedIn>
               <UserButton />

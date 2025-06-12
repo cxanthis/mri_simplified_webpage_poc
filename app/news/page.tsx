@@ -95,7 +95,7 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
           });
           return (
             <div key={index} className={styles.tile}>
-              <div className="flex justify-between items-center">
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
                 {/* Left side: Text content */}
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-2 mb-1">

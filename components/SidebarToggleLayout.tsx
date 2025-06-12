@@ -1,7 +1,7 @@
 // components/SidebarToggleLayout.tsx
 "use client";
 import React, { useState } from "react";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaBars, FaTimes } from "react-icons/fa";
 
 interface SidebarToggleLayoutProps {
   sidebar: React.ReactNode;
@@ -18,9 +18,14 @@ export default function SidebarToggleLayout({
 }: SidebarToggleLayoutProps) {
   // When true, the sidebar is fully expanded; when false, it collapses.
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const toggleSidebar = () => {
     setSidebarExpanded((prev) => !prev);
+  };
+
+  const toggleMobile = () => {
+    setMobileOpen((prev) => !prev);
   };
 
   return (
@@ -28,10 +33,20 @@ export default function SidebarToggleLayout({
       {/* Optional Header */}
       {header && <header className="bg-gray-200 p-4">{header}</header>}
 
+      {/* Mobile hamburger */}
+      <div className="lg:hidden border-b border-gray-200 bg-white">
+        <div className="container mx-auto px-4 md:px-6 flex items-center h-16">
+          <button onClick={toggleMobile} aria-label="Open menu" className="p-2 mr-2">
+            <FaBars className="h-6 w-6" />
+          </button>
+          <span className="text-lg font-medium">Ebook content</span>
+        </div>
+      </div>
+
       {/* Main Content Area */}
       <div className="flex flex-1">
         <aside
-          className={`border-r border-gray-200 bg-white transition-all duration-300 ${
+          className={`hidden lg:block border-r border-gray-200 bg-white transition-all duration-300 ${
             sidebarExpanded ? "w-2/6" : "w-10"
           }`}
         >
@@ -52,6 +67,22 @@ export default function SidebarToggleLayout({
           {main}
         </main>
       </div>
+
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-50 bg-white overflow-auto">
+          <div className="p-4">
+            <button
+              onClick={toggleMobile}
+              className="mb-4"
+              aria-label="Close menu"
+            >
+              <FaTimes />
+            </button>
+            {sidebar}
+          </div>
+        </div>
+      )}
 
       {/* Optional Footer */}
       {footer && <footer className="bg-gray-200 p-4">{footer}</footer>}

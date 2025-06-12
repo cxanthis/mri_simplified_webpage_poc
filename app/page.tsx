@@ -21,7 +21,7 @@ export default function Home() {
         </div>
 
         {/* Content sections */}
-        <div className="grid grid-cols-4 lg:grid-cols-1 gap-8">
+        <div className="mt-8">
           <NewsSection />
         </div>
 
